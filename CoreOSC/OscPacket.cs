@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     public abstract class OscPacket
@@ -261,18 +262,14 @@
 
         private static int GetInt(byte[] msg, int index)
         {
-            var val = (msg[index] << 24) + (msg[index + 1] << 16) + (msg[index + 2] << 8) + (msg[index + 3] << 0);
-            return val;
+            (var value, _) = new Types.IntConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) });
+            return value;
         }
 
         private static float GetFloat(byte[] msg, int index)
         {
-            var reversed = new byte[4];
-            reversed[3] = msg[index];
-            reversed[2] = msg[index + 1];
-            reversed[1] = msg[index + 2];
-            reversed[0] = msg[index + 3];
-            return BitConverter.ToSingle(reversed, 0);
+            (var value, _) = new Types.FloatConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) });
+            return value;
         }
 
         private static string GetString(byte[] msg, int index)
@@ -356,28 +353,12 @@
 
         protected static byte[] SetInt(int value)
         {
-            var msg = new byte[4];
-
-            var bytes = BitConverter.GetBytes(value);
-            msg[0] = bytes[3];
-            msg[1] = bytes[2];
-            msg[2] = bytes[1];
-            msg[3] = bytes[0];
-
-            return msg;
+            return new Types.IntConverter().Serialize(value).First().Bytes;
         }
 
         protected static byte[] SetFloat(float value)
         {
-            var msg = new byte[4];
-
-            var bytes = BitConverter.GetBytes(value);
-            msg[0] = bytes[3];
-            msg[1] = bytes[2];
-            msg[2] = bytes[1];
-            msg[3] = bytes[0];
-
-            return msg;
+            return new Types.FloatConverter().Serialize(value).First().Bytes;
         }
 
         protected static byte[] SetString(string value)
