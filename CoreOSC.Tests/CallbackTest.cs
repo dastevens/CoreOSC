@@ -12,14 +12,14 @@ namespace CoreOSC.Tests
         {
             var cbCalled = false;
             // The cabllback function
-            HandleOscPacket cb = delegate (OscPacket packet)
+            void cb(OscPacket packet)
             {
                 var msg = (OscMessage)packet;
                 Assert.AreEqual(2, msg.Arguments.Count);
                 Assert.AreEqual(23, msg.Arguments[0]);
                 Assert.AreEqual("hello world", msg.Arguments[1]);
                 cbCalled = true;
-            };
+            }
 
             using (var l1 = new UDPListener(55555, cb))
             {
@@ -41,14 +41,14 @@ namespace CoreOSC.Tests
         {
             var cbCalled = false;
             // The cabllback function
-            HandleBytePacket cb = delegate (byte[] packet)
+            void cb(byte[] packet)
             {
                 var msg = (OscMessage)OscPacket.GetPacket(packet);
                 Assert.AreEqual(2, msg.Arguments.Count);
                 Assert.AreEqual(23, msg.Arguments[0]);
                 Assert.AreEqual("hello world", msg.Arguments[1]);
                 cbCalled = true;
-            };
+            }
 
             using (var l1 = new UDPListener(55555, cb))
             {

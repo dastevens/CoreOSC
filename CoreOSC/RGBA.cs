@@ -2,13 +2,6 @@
 {
     public struct RGBA
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RGBA"/> struct.
-        /// </summary>
-        /// <param name="red"></param>
-        /// <param name="green"></param>
-        /// <param name="blue"></param>
-        /// <param name="alpha"></param>
         public RGBA(byte red, byte green, byte blue, byte alpha)
         {
             this.R = red;

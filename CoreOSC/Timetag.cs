@@ -1,35 +1,19 @@
-﻿namespace CoreOSC
-{
-    using System;
+﻿using System;
 
+namespace CoreOSC
+{
     public struct Timetag
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Timetag"/> struct.
-        /// </summary>
-        /// <param name="value"></param>
         public Timetag(ulong value)
         {
             this.Tag = value;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Timetag"/> struct.
-        /// </summary>
-        /// <param name="value"></param>
-        public Timetag(DateTime value)
+        public static Timetag FromDateTime(DateTime value)
         {
-            this.Tag = Utils.DateTimeToTimetag(value);
+            return new Timetag(Utils.DateTimeToTimetag(value));
         }
 
         public ulong Tag { get; }
-
-        public DateTime Timestamp
-        {
-            get
-            {
-                return Utils.TimetagToDateTime(this.Tag);
-            }
-        }
     }
 }

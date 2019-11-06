@@ -7,18 +7,13 @@
 
     public class OscBundle : OscPacket
     {
-        private Timetag timetag;
-
         public OscBundle(ulong timetag, params OscMessage[] args)
         {
-            this.timetag = new Timetag(timetag);
+            this.Timetag = new Timetag(timetag);
             this.Messages.AddRange(args);
         }
 
-        public DateTime Timestamp
-        {
-            get { return this.timetag.Timestamp; }
-        }
+        public Timetag Timetag { get; }
 
         public List<OscMessage> Messages { get; } = new List<OscMessage>();
 
@@ -26,7 +21,7 @@
         {
             var bundle = "#bundle";
             var bundleTagLen = Utils.AlignedStringLength(bundle);
-            var tag = SetULong(this.timetag.Tag);
+            var tag = SetULong(this.Timetag.Tag);
 
             var outMessages = new List<byte[]>();
             foreach (var msg in this.Messages)

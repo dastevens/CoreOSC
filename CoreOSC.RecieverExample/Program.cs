@@ -6,14 +6,14 @@ namespace CoreOSC.RecieverExample
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var counter = 0;
 
             /**
              * Callback handle that will handle 
              * every message recieved from Behringer X Air */
-            HandleOscPacket callback = delegate (OscPacket packet)
+            void callback(OscPacket packet)
             {
                 var messageReceived = (OscMessage)packet;
                 Console.Write(++counter + "#");
@@ -25,7 +25,7 @@ namespace CoreOSC.RecieverExample
                 }
 
                 Console.WriteLine("");
-            };
+            }
 
             /**
              * Connect to remote Behringer X Air mixer

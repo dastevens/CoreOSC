@@ -35,7 +35,7 @@ namespace CoreOSC.Tests
         public void TestTimetag()
         {
             var val = DateTime.Now;
-            var tag = new Timetag(val);
+            var tag = Timetag.FromDateTime(val);
 
             var msg = new OscMessage("/test/1", tag);
             var bytes = msg.GetBytes();
