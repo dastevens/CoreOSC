@@ -1,9 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Net;
+    using System.Net.Sockets;
+
     public class UDPSender
     {
         public int Port

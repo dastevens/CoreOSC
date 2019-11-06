@@ -1,8 +1,8 @@
-﻿using System;
-using System.Net;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Net;
+
     public class UDPDuplex : UDPListener
     {
         public int RemotePort { get; private set; }

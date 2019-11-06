@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+
     public class Utils
     {
         public static DateTime TimetagToDateTime(UInt64 val)

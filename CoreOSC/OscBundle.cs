@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     public class OscBundle : OscPacket
     {
         private Timetag _timetag;
@@ -34,7 +34,7 @@ namespace CoreOSC
         {
             string bundle = "#bundle";
             int bundleTagLen = Utils.AlignedStringLength(bundle);
-            byte[] tag = setULong(_timetag.Tag);
+            byte[] tag = SetULong(_timetag.Tag);
 
             List<byte[]> outMessages = new List<byte[]>();
             foreach (OscMessage msg in Messages)
@@ -53,7 +53,7 @@ namespace CoreOSC
 
             foreach (byte[] msg in outMessages)
             {
-                var size = setInt(msg.Length);
+                var size = SetInt(msg.Length);
                 size.CopyTo(output, i);
                 i += size.Length;
 

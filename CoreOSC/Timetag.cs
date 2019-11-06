@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+
     public struct Timetag
     {
         public UInt64 Tag;

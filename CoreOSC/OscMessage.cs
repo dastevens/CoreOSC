@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     public class OscMessage : OscPacket
     {
         public string Address;
@@ -35,7 +35,7 @@ namespace CoreOSC
                 {
                     case "System.Int32":
                         typeString += "i";
-                        parts.Add(setInt((int)arg));
+                        parts.Add(SetInt((int)arg));
                         break;
 
                     case "System.Single":
@@ -46,33 +46,33 @@ namespace CoreOSC
                         else
                         {
                             typeString += "f";
-                            parts.Add(setFloat((float)arg));
+                            parts.Add(SetFloat((float)arg));
                         }
                         break;
 
                     case "System.String":
                         typeString += "s";
-                        parts.Add(setString((string)arg));
+                        parts.Add(SetString((string)arg));
                         break;
 
                     case "System.Byte[]":
                         typeString += "b";
-                        parts.Add(setBlob((byte[])arg));
+                        parts.Add(SetBlob((byte[])arg));
                         break;
 
                     case "System.Int64":
                         typeString += "h";
-                        parts.Add(setLong((Int64)arg));
+                        parts.Add(SetLong((Int64)arg));
                         break;
 
                     case "System.UInt64":
                         typeString += "t";
-                        parts.Add(setULong((UInt64)arg));
+                        parts.Add(SetULong((UInt64)arg));
                         break;
 
                     case "CoreOSC.Timetag":
                         typeString += "t";
-                        parts.Add(setULong(((Timetag)arg).Tag));
+                        parts.Add(SetULong(((Timetag)arg).Tag));
                         break;
 
                     case "System.Double":
@@ -83,28 +83,28 @@ namespace CoreOSC
                         else
                         {
                             typeString += "d";
-                            parts.Add(setDouble((double)arg));
+                            parts.Add(SetDouble((double)arg));
                         }
                         break;
 
                     case "CoreOSC.Symbol":
                         typeString += "S";
-                        parts.Add(setString(((Symbol)arg).Value));
+                        parts.Add(SetString(((Symbol)arg).Value));
                         break;
 
                     case "System.Char":
                         typeString += "c";
-                        parts.Add(setChar((char)arg));
+                        parts.Add(SetChar((char)arg));
                         break;
 
                     case "CoreOSC.RGBA":
                         typeString += "r";
-                        parts.Add(setRGBA((RGBA)arg));
+                        parts.Add(SetRGBA((RGBA)arg));
                         break;
 
                     case "CoreOSC.Midi":
                         typeString += "m";
-                        parts.Add(setMidi((Midi)arg));
+                        parts.Add(SetMidi((Midi)arg));
                         break;
 
                     case "System.Boolean":
