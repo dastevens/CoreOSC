@@ -14,10 +14,13 @@ Roadmap
 
 Planned improvements to code base
 
-1. Fix tests
+1. Fix tests - OK
 2. Tidy up code
+   + Add StyleCop and fix issues
+   + Make OSC classes immutable
+   + Remove casts from/to OscPacket
 3. Break out type switch into separate TypeConverter classes
-4. Make UDP code async
+4. Make UDP code async, rename as OscClient
 5. Make nuget package (with AppVeyor?) and release to nuget
 
 History
