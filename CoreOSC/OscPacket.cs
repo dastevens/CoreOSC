@@ -27,12 +27,12 @@
         /// <returns>Message containing various arguments and an address</returns>
         private static OscMessage ParseMessage(byte[] msg)
         {
-            int index = 0;
+            var index = 0;
 
             string address = null;
-            char[] types = new char[0];
-            List<object> arguments = new List<object>();
-            List<object> mainArray = arguments; // used as a reference when we are parsing arrays to get the main array back
+            var types = new char[0];
+            var arguments = new List<object>();
+            var mainArray = arguments; // used as a reference when we are parsing arrays to get the main array back
 
             // Get address
             address = GetAddress(msg, index);
@@ -52,9 +52,9 @@
                 index++;
             }
 
-            bool commaParsed = false;
+            var commaParsed = false;
 
-            foreach (char type in types)
+            foreach (var type in types)
             {
                 // skip leading comma
                 if (type == ',' && !commaParsed)
@@ -222,7 +222,7 @@
 
         private static string GetAddress(byte[] msg, int index)
         {
-            var address = "";
+            var address = string.Empty;
             var chars = Encoding.UTF8.GetChars(msg);
 
             for (var i = index; i < chars.Length; i++)
@@ -261,7 +261,7 @@
 
         private static int GetInt(byte[] msg, int index)
         {
-            int val = (msg[index] << 24) + (msg[index + 1] << 16) + (msg[index + 2] << 8) + (msg[index + 3] << 0);
+            var val = (msg[index] << 24) + (msg[index + 1] << 16) + (msg[index + 2] << 8) + (msg[index + 3] << 0);
             return val;
         }
 
@@ -311,7 +311,7 @@
 
         private static long GetLong(byte[] msg, int index)
         {
-            byte[] var = new byte[8];
+            var var = new byte[8];
             var[7] = msg[index];
             var[6] = msg[index + 1];
             var[5] = msg[index + 2];
@@ -382,7 +382,7 @@
 
         protected static byte[] SetString(string value)
         {
-            int len = value.Length + (4 - value.Length % 4);
+            var len = value.Length + (4 - (value.Length % 4));
             if (len <= value.Length)
             {
                 len += 4;
@@ -398,7 +398,7 @@
 
         protected static byte[] SetBlob(byte[] value)
         {
-            int len = value.Length + 4;
+            var len = value.Length + 4;
             len += 4 - (len % 4);
 
             var msg = new byte[len];

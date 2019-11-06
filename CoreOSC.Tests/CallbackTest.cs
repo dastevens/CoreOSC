@@ -10,7 +10,7 @@ namespace CoreOSC.Tests
         [TestCase]
         public void TestCallback()
         {
-            bool cbCalled = false;
+            var cbCalled = false;
             // The cabllback function
             HandleOscPacket cb = delegate (OscPacket packet)
             {
@@ -39,7 +39,7 @@ namespace CoreOSC.Tests
         [TestCase]
         public void TestByteCallback()
         {
-            bool cbCalled = false;
+            var cbCalled = false;
             // The cabllback function
             HandleBytePacket cb = delegate (byte[] packet)
             {

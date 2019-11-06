@@ -39,7 +39,7 @@ namespace CoreOSC.Tests
                 sender.Send(msg1);
 
                 OscMessage msgRevc = null;
-                int retries = 5;
+                var retries = 5;
                 do
                 {
                     Task.Delay(1).Wait();
@@ -81,7 +81,7 @@ namespace CoreOSC.Tests
 
                 sender1.Send(bundle);
                 OscBundle recv = null;
-                int retries = 5;
+                var retries = 5;
                 do
                 {
                     Task.Delay(1).Wait();

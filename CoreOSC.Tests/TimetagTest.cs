@@ -9,7 +9,7 @@ namespace CoreOSC.Tests
         [TestCase]
         public void TestTimetag()
         {
-            UInt64 time = (ulong)60 * (ulong)60 * (ulong)24 * (ulong)365 * (ulong)108;
+            var time = (ulong)60 * (ulong)60 * (ulong)24 * (ulong)365 * (ulong)108;
             time = time << 32;
             time = time + (ulong)(Math.Pow(2, 32) / 2);
             var date = Utils.TimetagToDateTime(time);

@@ -5,7 +5,7 @@
 
     public class UDPDuplex : UDPListener
     {
-        private readonly IPEndPoint RemoteIpEndPoint2;
+        private readonly IPEndPoint remoteIpEndPoint2;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UDPDuplex"/> class.
@@ -19,9 +19,12 @@
             this.RemoteAddress = remoteAddress;
 
             var addresses = System.Net.Dns.GetHostAddresses(remoteAddress);
-            if (addresses.Length == 0) throw new Exception("Unable to find IP address for " + remoteAddress);
+            if (addresses.Length == 0)
+            {
+                throw new Exception("Unable to find IP address for " + remoteAddress);
+            }
 
-            this.RemoteIpEndPoint2 = new IPEndPoint(addresses[0], remotePort);
+            this.remoteIpEndPoint2 = new IPEndPoint(addresses[0], remotePort);
         }
 
         /// <summary>
@@ -31,9 +34,10 @@
         /// <param name="remotePort"></param>
         /// <param name="port"></param>
         /// <param name="callback"></param>
-        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleOscPacket callback) : this(remoteAddress, remotePort, port)
+        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleOscPacket callback)
+            : this(remoteAddress, remotePort, port)
         {
-            this.OscPacketCallback = callback;
+            this.oscPacketCallback = callback;
         }
 
         /// <summary>
@@ -43,9 +47,10 @@
         /// <param name="remotePort"></param>
         /// <param name="port"></param>
         /// <param name="callback"></param>
-        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleBytePacket callback) : this(remoteAddress, remotePort, port)
+        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleBytePacket callback)
+            : this(remoteAddress, remotePort, port)
         {
-            this.BytePacketCallback = callback;
+            this.bytePacketCallback = callback;
         }
 
         public int RemotePort { get; private set; }
@@ -53,12 +58,12 @@
 
         public void Send(byte[] message)
         {
-            this.receivingUdpClient.Send(message, message.Length, this.RemoteIpEndPoint2);
+            this.receivingUdpClient.Send(message, message.Length, this.remoteIpEndPoint2);
         }
 
         public void Send(OscPacket packet)
         {
-            byte[] data = packet.GetBytes();
+            var data = packet.GetBytes();
             this.Send(data);
         }
     }

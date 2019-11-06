@@ -34,7 +34,7 @@
 
         public void Send(OscPacket packet)
         {
-            byte[] data = packet.GetBytes();
+            var data = packet.GetBytes();
             this.Send(data);
         }
 

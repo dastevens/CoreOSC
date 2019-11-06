@@ -8,7 +8,7 @@ namespace CoreOSC.RecieverExample
     {
         static void Main(string[] args)
         {
-            int counter = 0;
+            var counter = 0;
 
             /**
              * Callback handle that will handle 

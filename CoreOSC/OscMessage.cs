@@ -24,18 +24,18 @@
 
         public override byte[] GetBytes()
         {
-            List<byte[]> parts = new List<byte[]>();
+            var parts = new List<byte[]>();
 
-            List<object> currentList = this.Arguments;
-            int ArgumentsIndex = 0;
+            var currentList = this.Arguments;
+            var argumentsIndex = 0;
 
-            string typeString = ",";
-            int i = 0;
+            var typeString = ",";
+            var i = 0;
             while (i < currentList.Count)
             {
                 var arg = currentList[i];
 
-                string type = (arg != null) ? arg.GetType().ToString() : "null";
+                var type = (arg != null) ? arg.GetType().ToString() : "null";
                 switch (type)
                 {
                     case "System.Int32":
@@ -128,13 +128,18 @@
                     case "System.Object[]":
                     case "System.Collections.Generic.List`1[System.Object]":
                         if (arg.GetType() == typeof(object[]))
+                        {
                             arg = ((object[])arg).ToList();
+                        }
 
                         if (this.Arguments != currentList)
+                        {
                             throw new Exception("Nested Arrays are not supported");
+                        }
+
                         typeString += "[";
                         currentList = (List<object>)arg;
-                        ArgumentsIndex = i;
+                        argumentsIndex = i;
                         i = 0;
                         continue;
 
@@ -148,16 +153,16 @@
                     // End of array, go back to main Argument list
                     typeString += "]";
                     currentList = this.Arguments;
-                    i = ArgumentsIndex + 1;
+                    i = argumentsIndex + 1;
                 }
             }
 
-            int addressLen = (this.Address.Length == 0 || this.Address == null) ? 0 : Utils.AlignedStringLength(this.Address);
-            int typeLen = Utils.AlignedStringLength(typeString);
+            var addressLen = (this.Address.Length == 0 || this.Address == null) ? 0 : Utils.AlignedStringLength(this.Address);
+            var typeLen = Utils.AlignedStringLength(typeString);
 
-            int total = addressLen + typeLen + parts.Sum(x => x.Length);
+            var total = addressLen + typeLen + parts.Sum(x => x.Length);
 
-            byte[] output = new byte[total];
+            var output = new byte[total];
             i = 0;
 
             Encoding.ASCII.GetBytes(this.Address).CopyTo(output, i);
@@ -166,7 +171,7 @@
             Encoding.ASCII.GetBytes(typeString).CopyTo(output, i);
             i += typeLen;
 
-            foreach (byte[] part in parts)
+            foreach (var part in parts)
             {
                 part.CopyTo(output, i);
                 i += part.Length;

@@ -14,15 +14,15 @@
 
     public class UDPListener : IDisposable
     {
-        protected UdpClient receivingUdpClient;
-        protected HandleBytePacket BytePacketCallback = null;
-        protected HandleOscPacket OscPacketCallback = null;
-
-        private IPEndPoint RemoteIpEndPoint;
-        private readonly object callbackLock = new object();
-        private bool closing = false;
-
         private readonly ConcurrentQueue<byte[]> queue = new ConcurrentQueue<byte[]>();
+        private readonly object callbackLock = new object();
+
+        protected readonly UdpClient receivingUdpClient;
+        protected HandleBytePacket bytePacketCallback = null;
+        protected HandleOscPacket oscPacketCallback = null;
+
+        private IPEndPoint remoteIpEndPoint;
+        private bool closing = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UDPListener"/> class.
@@ -31,7 +31,7 @@
         public UDPListener(int port)
         {
             // try to open the port 10 times, else fail
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 try
                 {
@@ -42,16 +42,18 @@
                 {
                     // Failed in ten tries, throw the exception and give up
                     if (i >= 9)
+                    {
                         throw;
+                    }
 
                     Thread.Sleep(5);
                 }
             }
 
-            this.RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            this.remoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
             // setup first async event
-            AsyncCallback callBack = new AsyncCallback(this.ReceiveCallback);
+            var callBack = new AsyncCallback(this.ReceiveCallback);
             this.receivingUdpClient.BeginReceive(callBack, null);
         }
 
@@ -60,9 +62,10 @@
         /// </summary>
         /// <param name="port"></param>
         /// <param name="callback"></param>
-        public UDPListener(int port, HandleOscPacket callback) : this(port)
+        public UDPListener(int port, HandleOscPacket callback)
+            : this(port)
         {
-            this.OscPacketCallback = callback;
+            this.oscPacketCallback = callback;
         }
 
         /// <summary>
@@ -73,7 +76,7 @@
         public UDPListener(int port, HandleBytePacket callback)
             : this(port)
         {
-            this.BytePacketCallback = callback;
+            this.bytePacketCallback = callback;
         }
 
         private void ReceiveCallback(IAsyncResult result)
@@ -83,7 +86,7 @@
 
             try
             {
-                bytes = this.receivingUdpClient.EndReceive(result, ref this.RemoteIpEndPoint);
+                bytes = this.receivingUdpClient.EndReceive(result, ref this.remoteIpEndPoint);
             }
             catch (ObjectDisposedException)
             {
@@ -93,11 +96,11 @@
             // Process bytes
             if (bytes != null && bytes.Length > 0)
             {
-                if (this.BytePacketCallback != null)
+                if (this.bytePacketCallback != null)
                 {
-                    this.BytePacketCallback(bytes);
+                    this.bytePacketCallback(bytes);
                 }
-                else if (this.OscPacketCallback != null)
+                else if (this.oscPacketCallback != null)
                 {
                     OscPacket packet = null;
                     try
@@ -109,7 +112,7 @@
                         // If there is an error reading the packet, null is sent to the callback
                     }
 
-                    this.OscPacketCallback(packet);
+                    this.oscPacketCallback(packet);
                 }
                 else
                 {
@@ -120,7 +123,7 @@
             if (!this.closing)
             {
                 // Setup next async event
-                AsyncCallback callBack = new AsyncCallback(this.ReceiveCallback);
+                var callBack = new AsyncCallback(this.ReceiveCallback);
                 this.receivingUdpClient.BeginReceive(callBack, null);
             }
 

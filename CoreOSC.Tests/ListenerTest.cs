@@ -31,7 +31,7 @@ namespace CoreOSC.Tests
         [TestCase]
         public void CloseListenerException()
         {
-            bool ex = false;
+            var ex = false;
             try
             {
                 using (var l1 = new UDPListener(55555))
@@ -85,10 +85,10 @@ namespace CoreOSC.Tests
 
                 var msg = new CoreOSC.OscMessage("/test/", 23.42f);
 
-                for (int i = 0; i < 1000; i++)
+                for (var i = 0; i < 1000; i++)
                     sender.Send(msg);
 
-                for (int i = 0; i < 1000; i++)
+                for (var i = 0; i < 1000; i++)
                 {
                     var receivedMessage = listener.Receive();
                     Assert.NotNull(receivedMessage);
