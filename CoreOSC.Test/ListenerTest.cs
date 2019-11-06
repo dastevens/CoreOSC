@@ -37,7 +37,7 @@ namespace CoreOSC.Tests
                 using (var l1 = new UDPListener(55555))
                 {
                     _ = l1.Receive();
-                    using (new UDPListener(55555)) ;
+                    using (new UDPListener(55555)) { }
                 }
             }
             catch (Exception)

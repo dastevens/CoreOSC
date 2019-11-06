@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+
     public struct Timetag
     {
         public Timetag(ulong value)
@@ -9,11 +9,11 @@ namespace CoreOSC
             this.Tag = value;
         }
 
+        public ulong Tag { get; }
+
         public static Timetag FromDateTime(DateTime value)
         {
             return new Timetag(Utils.DateTimeToTimetag(value));
         }
-
-        public ulong Tag { get; }
     }
 }
