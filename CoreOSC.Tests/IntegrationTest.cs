@@ -33,7 +33,7 @@ namespace CoreOSC.Tests
                     true,
                     false,
                     null,
-                    Double.PositiveInfinity
+                    double.PositiveInfinity
                 );
 
                 sender.Send(msg1);
@@ -64,7 +64,7 @@ namespace CoreOSC.Tests
                 Assert.AreEqual(true, msgRevc.Arguments[12]);
                 Assert.AreEqual(false, msgRevc.Arguments[13]);
                 Assert.AreEqual(null, msgRevc.Arguments[14]);
-                Assert.AreEqual(Double.PositiveInfinity, msgRevc.Arguments[15]);
+                Assert.AreEqual(double.PositiveInfinity, msgRevc.Arguments[15]);
             }
         }
 

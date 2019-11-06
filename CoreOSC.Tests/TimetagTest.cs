@@ -9,9 +9,9 @@ namespace CoreOSC.Tests
         [TestCase]
         public void TestTimetag()
         {
-            UInt64 time = (UInt64)60 * (UInt64)60 * (UInt64)24 * (UInt64)365 * (UInt64)108;
+            UInt64 time = (ulong)60 * (ulong)60 * (ulong)24 * (ulong)365 * (ulong)108;
             time = time << 32;
-            time = time + (UInt64)(Math.Pow(2, 32) / 2);
+            time = time + (ulong)(Math.Pow(2, 32) / 2);
             var date = Utils.TimetagToDateTime(time);
 
             Assert.AreEqual(DateTime.Parse("2007-12-06 00:00:00.500"), date);

@@ -7,37 +7,36 @@
 
     public class OscBundle : OscPacket
     {
-        private Timetag _timetag;
+        private Timetag timetag;
 
-        public UInt64 Timetag
+        public ulong Timetag
         {
-            get { return _timetag.Tag; }
-            set { _timetag.Tag = value; }
+            get { return this.timetag.Tag; }
+            set { this.timetag.Tag = value; }
         }
 
         public DateTime Timestamp
         {
-            get { return _timetag.Timestamp; }
-            set { _timetag.Timestamp = value; }
+            get { return this.timetag.Timestamp; }
+            set { this.timetag.Timestamp = value; }
         }
 
-        public List<OscMessage> Messages;
+        public List<OscMessage> Messages { get; } = new List<OscMessage>();
 
-        public OscBundle(UInt64 timetag, params OscMessage[] args)
+        public OscBundle(ulong timetag, params OscMessage[] args)
         {
-            _timetag = new Timetag(timetag);
-            Messages = new List<OscMessage>();
-            Messages.AddRange(args);
+            this.timetag = new Timetag(timetag);
+            this.Messages.AddRange(args);
         }
 
         public override byte[] GetBytes()
         {
             string bundle = "#bundle";
             int bundleTagLen = Utils.AlignedStringLength(bundle);
-            byte[] tag = SetULong(_timetag.Tag);
+            byte[] tag = SetULong(this.timetag.Tag);
 
             List<byte[]> outMessages = new List<byte[]>();
-            foreach (OscMessage msg in Messages)
+            foreach (OscMessage msg in this.Messages)
             {
                 outMessages.Add(msg.GetBytes());
             }

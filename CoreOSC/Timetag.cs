@@ -4,17 +4,17 @@
 
     public struct Timetag
     {
-        public UInt64 Tag;
+        public ulong Tag;
 
         public DateTime Timestamp
         {
             get
             {
-                return Utils.TimetagToDateTime(Tag);
+                return Utils.TimetagToDateTime(this.Tag);
             }
             set
             {
-                Tag = Utils.DateTimeToTimetag(value);
+                this.Tag = Utils.DateTimeToTimetag(value);
             }
         }
 
@@ -26,26 +26,26 @@
         {
             get
             {
-                return Utils.TimetagToFraction(Tag);
+                return Utils.TimetagToFraction(this.Tag);
             }
             set
             {
-                Tag = (Tag & 0xFFFFFFFF00000000) + (UInt32)(value * 0xFFFFFFFF);
+                this.Tag = (this.Tag & 0xFFFFFFFF00000000) + (uint)(value * 0xFFFFFFFF);
             }
         }
 
-        public Timetag(UInt64 value)
+        public Timetag(ulong value)
         {
             this.Tag = value;
         }
 
         public Timetag(DateTime value)
         {
-            Tag = 0;
+            this.Tag = 0;
             this.Timestamp = value;
         }
 
-        public override bool Equals(System.Object obj)
+        public override bool Equals(object obj)
         {
             if (obj.GetType() == typeof(Timetag))
             {
@@ -54,9 +54,9 @@
                 else
                     return false;
             }
-            else if (obj.GetType() == typeof(UInt64))
+            else if (obj.GetType() == typeof(ulong))
             {
-                if (this.Tag == ((UInt64)obj))
+                if (this.Tag == ((ulong)obj))
                     return true;
                 else
                     return false;
@@ -83,7 +83,7 @@
 
         public override int GetHashCode()
         {
-            return (int)(((uint)(Tag >> 32) + (uint)(Tag & 0x00000000FFFFFFFF)) / 2);
+            return (int)(((uint)(this.Tag >> 32) + (uint)(this.Tag & 0x00000000FFFFFFFF)) / 2);
         }
     }
 }

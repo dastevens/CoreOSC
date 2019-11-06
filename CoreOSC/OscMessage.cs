@@ -13,15 +13,15 @@
         public OscMessage(string address, params object[] args)
         {
             this.Address = address;
-            Arguments = new List<object>();
-            Arguments.AddRange(args);
+            this.Arguments = new List<object>();
+            this.Arguments.AddRange(args);
         }
 
         public override byte[] GetBytes()
         {
             List<byte[]> parts = new List<byte[]>();
 
-            List<object> currentList = Arguments;
+            List<object> currentList = this.Arguments;
             int ArgumentsIndex = 0;
 
             string typeString = ",";
@@ -62,12 +62,12 @@
 
                     case "System.Int64":
                         typeString += "h";
-                        parts.Add(SetLong((Int64)arg));
+                        parts.Add(SetLong((long)arg));
                         break;
 
                     case "System.UInt64":
                         typeString += "t";
-                        parts.Add(SetULong((UInt64)arg));
+                        parts.Add(SetULong((ulong)arg));
                         break;
 
                     case "CoreOSC.Timetag":
@@ -76,7 +76,7 @@
                         break;
 
                     case "System.Double":
-                        if (Double.IsPositiveInfinity((double)arg))
+                        if (double.IsPositiveInfinity((double)arg))
                         {
                             typeString += "I";
                         }
@@ -123,7 +123,7 @@
                         if (arg.GetType() == typeof(object[]))
                             arg = ((object[])arg).ToList();
 
-                        if (Arguments != currentList)
+                        if (this.Arguments != currentList)
                             throw new Exception("Nested Arrays are not supported");
                         typeString += "[";
                         currentList = (List<object>)arg;
@@ -136,16 +136,16 @@
                 }
 
                 i++;
-                if (currentList != Arguments && i == currentList.Count)
+                if (currentList != this.Arguments && i == currentList.Count)
                 {
                     // End of array, go back to main Argument list
                     typeString += "]";
-                    currentList = Arguments;
+                    currentList = this.Arguments;
                     i = ArgumentsIndex + 1;
                 }
             }
 
-            int addressLen = (Address.Length == 0 || Address == null) ? 0 : Utils.AlignedStringLength(Address);
+            int addressLen = (this.Address.Length == 0 || this.Address == null) ? 0 : Utils.AlignedStringLength(this.Address);
             int typeLen = Utils.AlignedStringLength(typeString);
 
             int total = addressLen + typeLen + parts.Sum(x => x.Length);
@@ -153,7 +153,7 @@
             byte[] output = new byte[total];
             i = 0;
 
-            Encoding.ASCII.GetBytes(Address).CopyTo(output, i);
+            Encoding.ASCII.GetBytes(this.Address).CopyTo(output, i);
             i += addressLen;
 
             Encoding.ASCII.GetBytes(typeString).CopyTo(output, i);

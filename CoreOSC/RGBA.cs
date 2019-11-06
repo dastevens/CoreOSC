@@ -15,7 +15,7 @@
             this.A = alpha;
         }
 
-        public override bool Equals(System.Object obj)
+        public override bool Equals(object obj)
         {
             if (obj.GetType() == typeof(RGBA))
             {
@@ -53,7 +53,7 @@
 
         public override int GetHashCode()
         {
-            return (R << 24) + (G << 16) + (B << 8) + (A);
+            return (this.R << 24) + (this.G << 16) + (this.B << 8) + (this.A);
         }
     }
 }

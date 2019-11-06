@@ -6,7 +6,7 @@
 
         public Symbol()
         {
-            Value = "";
+            this.Value = "";
         }
 
         public Symbol(string value)
@@ -16,10 +16,10 @@
 
         public override string ToString()
         {
-            return Value;
+            return this.Value;
         }
 
-        public override bool Equals(System.Object obj)
+        public override bool Equals(object obj)
         {
             if (obj.GetType() == typeof(Symbol))
             {
@@ -57,7 +57,7 @@
 
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return this.Value.GetHashCode();
         }
     }
 }

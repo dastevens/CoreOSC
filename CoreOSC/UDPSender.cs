@@ -8,48 +8,48 @@
     {
         public int Port
         {
-            get { return _port; }
+            get { return this.port; }
         }
 
-        private int _port;
+        private int port;
 
         public string Address
         {
-            get { return _address; }
+            get { return this.address; }
         }
 
-        private string _address;
+        private string address;
 
         private IPEndPoint RemoteIpEndPoint;
         private Socket sock;
 
         public UDPSender(string address, int port)
         {
-            _port = port;
-            _address = address;
+            this.port = port;
+            this.address = address;
 
-            sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            this.sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
             var addresses = System.Net.Dns.GetHostAddresses(address);
             if (addresses.Length == 0) throw new Exception("Unable to find IP address for " + address);
 
-            RemoteIpEndPoint = new IPEndPoint(addresses[0], port);
+            this.RemoteIpEndPoint = new IPEndPoint(addresses[0], port);
         }
 
         public void Send(byte[] message)
         {
-            sock.SendTo(message, RemoteIpEndPoint);
+            this.sock.SendTo(message, this.RemoteIpEndPoint);
         }
 
         public void Send(OscPacket packet)
         {
             byte[] data = packet.GetBytes();
-            Send(data);
+            this.Send(data);
         }
 
         public void Close()
         {
-            sock.Close();
+            this.sock.Close();
         }
     }
 }
