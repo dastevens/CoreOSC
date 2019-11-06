@@ -1,9 +1,22 @@
 ﻿namespace CoreOSC.Types
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public struct DWord
     {
+        public DWord(IEnumerable<byte> bytes)
+            : this(bytes.Take(4).ToArray())
+        {
+        }
+
         public DWord(byte[] bytes)
-            : this(bytes[0], bytes[1], bytes[2], bytes[3])
+            : this(
+                  bytes.Length > 0 ? bytes[0] : (byte)0,
+                  bytes.Length > 1 ? bytes[1] : (byte)0,
+                  bytes.Length > 2 ? bytes[2] : (byte)0,
+                  bytes.Length > 3 ? bytes[3] : (byte)0
+                  )
         {
         }
 
