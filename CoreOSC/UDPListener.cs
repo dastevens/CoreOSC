@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -15,7 +16,7 @@ namespace CoreOSC
     {
         public int Port { get; private set; }
 
-        private object callbackLock;
+        readonly private object callbackLock = new object();
 
         protected UdpClient receivingUdpClient;
         private IPEndPoint RemoteIpEndPoint;
@@ -23,15 +24,11 @@ namespace CoreOSC
         protected HandleBytePacket BytePacketCallback = null;
         protected HandleOscPacket OscPacketCallback = null;
 
-        private Queue<byte[]> queue;
-        private ManualResetEvent ClosingEvent;
+        readonly private ConcurrentQueue<byte[]> queue = new ConcurrentQueue<byte[]>();
 
         public UDPListener(int port)
         {
             Port = port;
-            queue = new Queue<byte[]>();
-            ClosingEvent = new ManualResetEvent(false);
-            callbackLock = new object();
 
             // try to open the port 10 times, else fail
             for (int i = 0; i < 10; i++)
@@ -104,16 +101,11 @@ namespace CoreOSC
                 }
                 else
                 {
-                    lock (queue)
-                    {
-                        queue.Enqueue(bytes);
-                    }
+                    queue.Enqueue(bytes);
                 }
             }
 
-            if (closing)
-                ClosingEvent.Set();
-            else
+            if (!closing)
             {
                 // Setup next async event
                 AsyncCallback callBack = new AsyncCallback(ReceiveCallback);
@@ -124,53 +116,27 @@ namespace CoreOSC
 
         private bool closing = false;
 
-        public void Close()
+        public void Dispose()
         {
             lock (callbackLock)
             {
-                ClosingEvent.Reset();
                 closing = true;
                 receivingUdpClient.Close();
+                receivingUdpClient.Dispose();
             }
-            ClosingEvent.WaitOne();
-        }
-
-        public void Dispose()
-        {
-            this.Close();
         }
 
         public OscPacket Receive()
         {
-            if (closing) throw new Exception("UDPListener has been closed.");
-
-            lock (queue)
+            if (!closing)
             {
-                if (queue.Count() > 0)
+                if (queue.TryDequeue(out var bytes))
                 {
-                    byte[] bytes = queue.Dequeue();
                     var packet = OscPacket.GetPacket(bytes);
                     return packet;
                 }
-                else
-                    return null;
             }
-        }
-
-        public byte[] ReceiveBytes()
-        {
-            if (closing) throw new Exception("UDPListener has been closed.");
-
-            lock (queue)
-            {
-                if (queue.Count() > 0)
-                {
-                    byte[] bytes = queue.Dequeue();
-                    return bytes;
-                }
-                else
-                    return null;
-            }
+            return null;
         }
     }
 }

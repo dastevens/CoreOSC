@@ -21,20 +21,19 @@ namespace CoreOSC.Tests
                 cbCalled = true;
             };
 
-            var l1 = new UDPListener(55555, cb);
+            using (var l1 = new UDPListener(55555, cb))
+            {
+                var sender = new CoreOSC.UDPSender("localhost", 55555);
+                var msg1 = new CoreOSC.OscMessage("/test/address", 23, "hello world");
+                sender.Send(msg1);
 
-            var sender = new CoreOSC.UDPSender("localhost", 55555);
-            var msg1 = new CoreOSC.OscMessage("/test/address", 23, "hello world");
-            sender.Send(msg1);
+                // Wait until callback processes its message
+                var start = DateTime.Now;
+                while (cbCalled == false && start.AddSeconds(2) > DateTime.Now)
+                    Thread.Sleep(1);
 
-            // Wait until callback processes its message
-            var start = DateTime.Now;
-            while (cbCalled == false && start.AddSeconds(2) > DateTime.Now)
-                Thread.Sleep(1);
-
-            Assert.IsTrue(cbCalled);
-
-            l1.Close();
+                Assert.IsTrue(cbCalled);
+            }
         }
 
         [TestCase]
@@ -51,20 +50,19 @@ namespace CoreOSC.Tests
                 cbCalled = true;
             };
 
-            var l1 = new UDPListener(55555, cb);
+            using (var l1 = new UDPListener(55555, cb))
+            {
+                var sender = new CoreOSC.UDPSender("localhost", 55555);
+                var msg1 = new CoreOSC.OscMessage("/test/address", 23, "hello world");
+                sender.Send(msg1);
 
-            var sender = new CoreOSC.UDPSender("localhost", 55555);
-            var msg1 = new CoreOSC.OscMessage("/test/address", 23, "hello world");
-            sender.Send(msg1);
+                // Wait until callback processes its message
+                var start = DateTime.Now;
+                while (cbCalled == false && start.AddSeconds(2) > DateTime.Now)
+                    Thread.Sleep(1);
 
-            // Wait until callback processes its message
-            var start = DateTime.Now;
-            while (cbCalled == false && start.AddSeconds(2) > DateTime.Now)
-                Thread.Sleep(1);
-
-            Assert.IsTrue(cbCalled);
-
-            l1.Close();
+                Assert.IsTrue(cbCalled);
+            }
         }
     }
 }
