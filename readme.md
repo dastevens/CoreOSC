@@ -9,9 +9,21 @@ CoreOSC is a small library designed to make interacting with Open Sound Control 
 + Transmit OSC packets via UDP.
 + Receive OSC packets via UDP.
 
+Roadmap
+-------
+
+Planned improvements to code base
+
+1. Fix tests
+2. Tidy up code
+3. Break out type switch into separate TypeConverter classes
+4. Make UDP code async
+5. Make nuget package (with AppVeyor?) and release to nuget
+
 History
 --------
 
+Forked from https://github.com/Dalesjo/CoreOSC
 CoreOSC is forked and converted from [SharpOSC](https://github.com/ValdemarOrn/SharpOSC) made by [ValdermarOrn](https://github.com/ValdemarOrn)
 
 Supported Types
