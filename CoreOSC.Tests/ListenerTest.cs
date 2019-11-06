@@ -14,13 +14,15 @@ namespace CoreOSC.Tests
         [TestCase]
         public void CloseListener()
         {
-            var l1 = new UDPListener(55555);
-            var isnull = l1.Receive();
-            l1.Close();
+            using (var l1 = new UDPListener(55555))
+            {
+                _ = l1.Receive();
+            }
 
-            var l2 = new UDPListener(55555);
-            isnull = l2.Receive();
-            l2.Close();
+            using (var l2 = new UDPListener(55555))
+            {
+                _ = l2.Receive();
+            }
         }
 
         /// <summary>
@@ -29,13 +31,14 @@ namespace CoreOSC.Tests
         [TestCase]
         public void CloseListenerException()
         {
-            UDPListener l1 = null;
             bool ex = false;
             try
             {
-                l1 = new UDPListener(55555);
-                var isnull = l1.Receive();
-                var l2 = new UDPListener(55555);
+                using (var l1 = new UDPListener(55555))
+                {
+                    _ = l1.Receive();
+                    var l2 = new UDPListener(55555);
+                }
             }
             catch (Exception)
             {
@@ -43,7 +46,6 @@ namespace CoreOSC.Tests
             }
 
             Assert.IsTrue(ex);
-            l1.Close();
         }
 
         /// <summary>
@@ -52,24 +54,23 @@ namespace CoreOSC.Tests
         [TestCase]
         public void ListenerSingleMSG()
         {
-            var listener = new UDPListener(55555);
-
-            var sender = new CoreOSC.UDPSender("localhost", 55555);
-
-            var msg = new CoreOSC.OscMessage("/test/", 23.42f);
-
-            sender.Send(msg);
-
-            while (true)
+            using (var listener = new UDPListener(55555))
             {
-                var pack = listener.Receive();
-                if (pack == null)
-                    Thread.Sleep(1);
-                else
-                    break;
-            }
+                var sender = new CoreOSC.UDPSender("localhost", 55555);
 
-            listener.Dispose();
+                var msg = new CoreOSC.OscMessage("/test/", 23.42f);
+
+                sender.Send(msg);
+
+                while (true)
+                {
+                    var pack = listener.Receive();
+                    if (pack == null)
+                        Thread.Sleep(1);
+                    else
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -78,22 +79,21 @@ namespace CoreOSC.Tests
         [TestCase]
         public void ListenerLoadTest()
         {
-            var listener = new UDPListener(55555);
-
-            var sender = new CoreOSC.UDPSender("localhost", 55555);
-
-            var msg = new CoreOSC.OscMessage("/test/", 23.42f);
-
-            for (int i = 0; i < 1000; i++)
-                sender.Send(msg);
-
-            for (int i = 0; i < 1000; i++)
+            using (var listener = new UDPListener(55555))
             {
-                var receivedMessage = listener.Receive();
-                Assert.NotNull(receivedMessage);
-            }
+                var sender = new CoreOSC.UDPSender("localhost", 55555);
 
-            listener.Dispose();
+                var msg = new CoreOSC.OscMessage("/test/", 23.42f);
+
+                for (int i = 0; i < 1000; i++)
+                    sender.Send(msg);
+
+                for (int i = 0; i < 1000; i++)
+                {
+                    var receivedMessage = listener.Receive();
+                    Assert.NotNull(receivedMessage);
+                }
+            }
         }
     }
 }
