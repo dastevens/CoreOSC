@@ -9,25 +9,24 @@
     {
         private Timetag timetag;
 
-        public ulong Timetag
-        {
-            get { return this.timetag.Tag; }
-            set { this.timetag.Tag = value; }
-        }
-
-        public DateTime Timestamp
-        {
-            get { return this.timetag.Timestamp; }
-            set { this.timetag.Timestamp = value; }
-        }
-
-        public List<OscMessage> Messages { get; } = new List<OscMessage>();
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OscBundle"/> class.
+        /// </summary>
+        /// <param name="timetag"></param>
+        /// <param name="args"></param>
         public OscBundle(ulong timetag, params OscMessage[] args)
         {
             this.timetag = new Timetag(timetag);
             this.Messages.AddRange(args);
         }
+
+        public DateTime Timestamp
+        {
+            get { return this.timetag.Timestamp; }
+            //set { this.timetag.Timestamp = value; }
+        }
+
+        public List<OscMessage> Messages { get; } = new List<OscMessage>();
 
         public override byte[] GetBytes()
         {

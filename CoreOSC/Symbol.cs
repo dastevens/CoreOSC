@@ -4,11 +4,18 @@
     {
         public string Value;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Symbol"/> class.
+        /// </summary>
         public Symbol()
         {
             this.Value = "";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Symbol"/> class.
+        /// </summary>
+        /// <param name="value"></param>
         public Symbol(string value)
         {
             this.Value = value;

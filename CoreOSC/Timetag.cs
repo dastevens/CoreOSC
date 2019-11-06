@@ -4,7 +4,25 @@
 
     public struct Timetag
     {
-        public ulong Tag;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Timetag"/> struct.
+        /// </summary>
+        /// <param name="value"></param>
+        public Timetag(ulong value)
+        {
+            this.Tag = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Timetag"/> struct.
+        /// </summary>
+        /// <param name="value"></param>
+        public Timetag(DateTime value)
+        {
+            this.Tag = Utils.DateTimeToTimetag(value);
+        }
+
+        public ulong Tag { get; }
 
         public DateTime Timestamp
         {
@@ -12,10 +30,11 @@
             {
                 return Utils.TimetagToDateTime(this.Tag);
             }
-            set
-            {
-                this.Tag = Utils.DateTimeToTimetag(value);
-            }
+
+            //set
+            //{
+            //    this.Tag = Utils.DateTimeToTimetag(value);
+            //}
         }
 
         /// <summary>
@@ -28,62 +47,11 @@
             {
                 return Utils.TimetagToFraction(this.Tag);
             }
-            set
-            {
-                this.Tag = (this.Tag & 0xFFFFFFFF00000000) + (uint)(value * 0xFFFFFFFF);
-            }
-        }
 
-        public Timetag(ulong value)
-        {
-            this.Tag = value;
-        }
-
-        public Timetag(DateTime value)
-        {
-            this.Tag = 0;
-            this.Timestamp = value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj.GetType() == typeof(Timetag))
-            {
-                if (this.Tag == ((Timetag)obj).Tag)
-                    return true;
-                else
-                    return false;
-            }
-            else if (obj.GetType() == typeof(ulong))
-            {
-                if (this.Tag == ((ulong)obj))
-                    return true;
-                else
-                    return false;
-            }
-            else
-                return false;
-        }
-
-        public static bool operator ==(Timetag a, Timetag b)
-        {
-            if (a.Equals(b))
-                return true;
-            else
-                return false;
-        }
-
-        public static bool operator !=(Timetag a, Timetag b)
-        {
-            if (a.Equals(b))
-                return true;
-            else
-                return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return (int)(((uint)(this.Tag >> 32) + (uint)(this.Tag & 0x00000000FFFFFFFF)) / 2);
+            //set
+            //{
+            //    this.Tag = (this.Tag & 0xFFFFFFFF00000000) + (uint)(value * 0xFFFFFFFF);
+            //}
         }
     }
 }

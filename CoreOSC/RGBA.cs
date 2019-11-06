@@ -2,11 +2,13 @@
 {
     public struct RGBA
     {
-        public byte R;
-        public byte G;
-        public byte B;
-        public byte A;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RGBA"/> struct.
+        /// </summary>
+        /// <param name="red"></param>
+        /// <param name="green"></param>
+        /// <param name="blue"></param>
+        /// <param name="alpha"></param>
         public RGBA(byte red, byte green, byte blue, byte alpha)
         {
             this.R = red;
@@ -15,45 +17,12 @@
             this.A = alpha;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj.GetType() == typeof(RGBA))
-            {
-                if (this.R == ((RGBA)obj).R && this.G == ((RGBA)obj).G && this.B == ((RGBA)obj).B && this.A == ((RGBA)obj).A)
-                    return true;
-                else
-                    return false;
-            }
-            else if (obj.GetType() == typeof(byte[]))
-            {
-                if (this.R == ((byte[])obj)[0] && this.G == ((byte[])obj)[1] && this.B == ((byte[])obj)[2] && this.A == ((byte[])obj)[3])
-                    return true;
-                else
-                    return false;
-            }
-            else
-                return false;
-        }
+        public byte R { get; }
 
-        public static bool operator ==(RGBA a, RGBA b)
-        {
-            if (a.Equals(b))
-                return true;
-            else
-                return false;
-        }
+        public byte G { get; }
 
-        public static bool operator !=(RGBA a, RGBA b)
-        {
-            if (!a.Equals(b))
-                return true;
-            else
-                return false;
-        }
+        public byte B { get; }
 
-        public override int GetHashCode()
-        {
-            return (this.R << 24) + (this.G << 16) + (this.B << 8) + (this.A);
-        }
+        public byte A { get; }
     }
 }

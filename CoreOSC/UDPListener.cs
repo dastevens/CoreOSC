@@ -14,22 +14,22 @@
 
     public class UDPListener : IDisposable
     {
-        public int Port { get; private set; }
-
-        private readonly object callbackLock = new object();
-
         protected UdpClient receivingUdpClient;
-        private IPEndPoint RemoteIpEndPoint;
-
         protected HandleBytePacket BytePacketCallback = null;
         protected HandleOscPacket OscPacketCallback = null;
 
+        private IPEndPoint RemoteIpEndPoint;
+        private readonly object callbackLock = new object();
+        private bool closing = false;
+
         private readonly ConcurrentQueue<byte[]> queue = new ConcurrentQueue<byte[]>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPListener"/> class.
+        /// </summary>
+        /// <param name="port"></param>
         public UDPListener(int port)
         {
-            this.Port = port;
-
             // try to open the port 10 times, else fail
             for (int i = 0; i < 10; i++)
             {
@@ -47,6 +47,7 @@
                     Thread.Sleep(5);
                 }
             }
+
             this.RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
             // setup first async event
@@ -54,12 +55,23 @@
             this.receivingUdpClient.BeginReceive(callBack, null);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPListener"/> class.
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="callback"></param>
         public UDPListener(int port, HandleOscPacket callback) : this(port)
         {
             this.OscPacketCallback = callback;
         }
 
-        public UDPListener(int port, HandleBytePacket callback) : this(port)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPListener"/> class.
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="callback"></param>
+        public UDPListener(int port, HandleBytePacket callback)
+            : this(port)
         {
             this.BytePacketCallback = callback;
         }
@@ -111,10 +123,9 @@
                 AsyncCallback callBack = new AsyncCallback(this.ReceiveCallback);
                 this.receivingUdpClient.BeginReceive(callBack, null);
             }
+
             Monitor.Exit(this.callbackLock);
         }
-
-        private bool closing = false;
 
         public void Dispose()
         {
@@ -136,6 +147,7 @@
                     return packet;
                 }
             }
+
             return null;
         }
     }
