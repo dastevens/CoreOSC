@@ -6,25 +6,25 @@
 
     public abstract class OscPacket
     {
-        public static OscPacket GetPacket(byte[] OscData)
+        public static OscPacket GetPacket(byte[] oscData)
         {
-            if (OscData[0] == '#')
+            if (oscData[0] == '#')
             {
-                return ParseBundle(OscData);
+                return ParseBundle(oscData);
             }
             else
             {
-                return ParseMessage(OscData);
+                return ParseMessage(oscData);
             }
         }
 
         public abstract byte[] GetBytes();
 
         /// <summary>
-        /// Takes in an OSC bundle package in byte form and parses it into a more usable OscBundle object
+        /// Takes in an OSC bundle package in byte form and parses it into a more usable OscBundle object.
         /// </summary>
         /// <param name="msg"></param>
-        /// <returns>Message containing various arguments and an address</returns>
+        /// <returns>Message containing various arguments and an address.</returns>
         private static OscMessage ParseMessage(byte[] msg)
         {
             var index = 0;
@@ -178,10 +178,10 @@
         }
 
         /// <summary>
-        /// Takes in an OSC bundle package in byte form and parses it into a more usable OscBundle object
+        /// Takes in an OSC bundle package in byte form and parses it into a more usable OscBundle object.
         /// </summary>
         /// <param name="bundle"></param>
-        /// <returns>Bundle containing elements and a timetag</returns>
+        /// <returns>Bundle containing elements and a timetag.</returns>
         private static OscBundle ParseBundle(byte[] bundle)
         {
             var messages = new List<OscMessage>();

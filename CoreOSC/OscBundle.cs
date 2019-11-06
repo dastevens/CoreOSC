@@ -9,11 +9,6 @@
     {
         private Timetag timetag;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OscBundle"/> class.
-        /// </summary>
-        /// <param name="timetag"></param>
-        /// <param name="args"></param>
         public OscBundle(ulong timetag, params OscMessage[] args)
         {
             this.timetag = new Timetag(timetag);

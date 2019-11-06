@@ -13,7 +13,8 @@
         /// <param name="remoteAddress"></param>
         /// <param name="remotePort"></param>
         /// <param name="port"></param>
-        public UDPDuplex(string remoteAddress, int remotePort, int port) : base(port)
+        public UDPDuplex(string remoteAddress, int remotePort, int port)
+            : base(port)
         {
             this.RemotePort = remotePort;
             this.RemoteAddress = remoteAddress;
@@ -37,7 +38,7 @@
         public UDPDuplex(string remoteAddress, int remotePort, int port, HandleOscPacket callback)
             : this(remoteAddress, remotePort, port)
         {
-            this.oscPacketCallback = callback;
+            this.OscPacketCallback = callback;
         }
 
         /// <summary>
@@ -50,15 +51,16 @@
         public UDPDuplex(string remoteAddress, int remotePort, int port, HandleBytePacket callback)
             : this(remoteAddress, remotePort, port)
         {
-            this.bytePacketCallback = callback;
+            this.BytePacketCallback = callback;
         }
 
         public int RemotePort { get; private set; }
+
         public string RemoteAddress { get; private set; }
 
         public void Send(byte[] message)
         {
-            this.receivingUdpClient.Send(message, message.Length, this.remoteIpEndPoint2);
+            this.ReceivingUdpClient.Send(message, message.Length, this.remoteIpEndPoint2);
         }
 
         public void Send(OscPacket packet)

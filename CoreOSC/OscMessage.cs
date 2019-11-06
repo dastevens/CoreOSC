@@ -7,20 +7,16 @@
 
     public class OscMessage : OscPacket
     {
-        public string Address;
-        public List<object> Arguments;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OscMessage"/> class.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="args"></param>
         public OscMessage(string address, params object[] args)
         {
             this.Address = address;
             this.Arguments = new List<object>();
             this.Arguments.AddRange(args);
         }
+
+        public string Address { get; }
+
+        public List<object> Arguments { get; }
 
         public override byte[] GetBytes()
         {

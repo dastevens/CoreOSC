@@ -2,14 +2,6 @@
 {
     public struct Midi
     {
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Midi"/> struct.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <param name="status"></param>
-        /// <param name="data1"></param>
-        /// <param name="data2"></param>
         public Midi(byte port, byte status, byte data1, byte data2)
         {
             this.Port = port;
