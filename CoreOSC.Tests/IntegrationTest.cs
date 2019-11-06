@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 
 namespace CoreOSC.Tests
 {
@@ -35,11 +36,15 @@ namespace CoreOSC.Tests
                     Double.PositiveInfinity
                 );
 
-                OscMessage msgRevc = null;
-
                 sender.Send(msg1);
-                msgRevc = (OscMessage)listener.Receive();
-                Assert.NotNull(msgRevc);
+
+                OscMessage msgRevc = null;
+                int retries = 5;
+                do
+                {
+                    Task.Delay(1).Wait();
+                    msgRevc = listener.Receive() as OscMessage;
+                } while (msgRevc == null && retries-- > 0);
 
                 Assert.AreEqual("/test/address", msgRevc.Address);
                 Assert.AreEqual(16, msgRevc.Arguments.Count);
@@ -75,18 +80,19 @@ namespace CoreOSC.Tests
                 var bundle = new CoreOSC.OscBundle(Utils.DateTimeToTimetag(dt), msg1, msg2);
 
                 sender1.Send(bundle);
-                sender1.Send(bundle);
-                sender1.Send(bundle);
-
-                var recv = (OscBundle)listener.Receive();
-                recv = (OscBundle)listener.Receive();
-                recv = (OscBundle)listener.Receive();
+                OscBundle recv = null;
+                int retries = 5;
+                do
+                {
+                    Task.Delay(1).Wait();
+                    recv = listener.Receive() as OscBundle;
+                } while (recv == null && retries-- > 0);
 
                 Assert.AreEqual(dt.Date, recv.Timestamp.Date);
                 Assert.AreEqual(dt.Hour, recv.Timestamp.Hour);
                 Assert.AreEqual(dt.Minute, recv.Timestamp.Minute);
                 Assert.AreEqual(dt.Second, recv.Timestamp.Second);
-                //Assert.AreEqual(dt.Millisecond, recv.DateTime.Millisecond); Ventus not accurate enough
+                Assert.AreEqual(dt.Millisecond, recv.Timestamp.Millisecond);
 
                 Assert.AreEqual("/test/address1", recv.Messages[0].Address);
                 Assert.AreEqual(4, recv.Messages[0].Arguments.Count);
