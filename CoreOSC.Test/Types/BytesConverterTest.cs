@@ -80,5 +80,48 @@ namespace CoreOSC.Test.Types
 
             Assert.AreEqual(expectedOutput, result);
         }
+
+
+        [Test]
+        public void DeserializeZeroDWords()
+        {
+            var input = new DWord[] { };
+            var expectedValue = new byte[] { };
+            var expectedDWords = new DWord[] { };
+            var sut = new BytesConverter();
+
+            (var value, var dWords) = sut.Deserialize(input);
+
+            Assert.AreEqual(expectedValue, value);
+            Assert.AreEqual(expectedDWords, dWords);
+        }
+
+        [Test]
+        public void DeserializeOneDWord()
+        {
+            var input = new DWord[] { new DWord(1, 2, 3, 4) };
+            var expectedValue = new byte[] { 1, 2, 3, 4 };
+            var expectedDWords = new DWord[] { };
+            var sut = new BytesConverter();
+
+            (var value, var dWords) = sut.Deserialize(input);
+
+            Assert.AreEqual(expectedValue, value);
+            Assert.AreEqual(expectedDWords, dWords);
+        }
+
+        [Test]
+        public void DeserializeTwoDWords()
+        {
+            var input = new DWord[] { new DWord(1, 2, 3, 4), new DWord(5, 6, 7, 8) };
+            var expectedValue = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            var expectedDWords = new DWord[] { };
+            var sut = new BytesConverter();
+
+            (var value, var dWords) = sut.Deserialize(input);
+
+            Assert.AreEqual(expectedValue, value);
+            Assert.AreEqual(expectedDWords, dWords);
+        }
     }
 }
