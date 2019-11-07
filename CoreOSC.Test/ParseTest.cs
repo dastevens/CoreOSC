@@ -10,7 +10,7 @@ namespace CoreOSC.Tests
         [TestCase]
         public void TestDouble()
         {
-            double val = 1234567.2324521e36;
+            var val = 1234567.2324521e36;
 
             var msg = new OscMessage("/test/1", val);
             var bytes = msg.GetBytes();
@@ -35,7 +35,7 @@ namespace CoreOSC.Tests
         public void TestTimetag()
         {
             var val = DateTime.Now;
-            var tag = new Timetag(val);
+            var tag = Timetag.FromDateTime(val);
 
             var msg = new OscMessage("/test/1", tag);
             var bytes = msg.GetBytes();
@@ -47,7 +47,7 @@ namespace CoreOSC.Tests
         [TestCase]
         public void TestLong()
         {
-            long num = 123456789012345;
+            var num = 123456789012345;
             var msg = new OscMessage("/test/1", num);
             var bytes = msg.GetBytes();
 

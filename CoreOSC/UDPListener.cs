@@ -1,77 +1,118 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Threading;
+
     public delegate void HandleOscPacket(OscPacket packet);
 
     public delegate void HandleBytePacket(byte[] packet);
 
     public class UDPListener : IDisposable
     {
-        public int Port { get; private set; }
+        private readonly ConcurrentQueue<byte[]> queue = new ConcurrentQueue<byte[]>();
+        private readonly object callbackLock = new object();
 
-        readonly private object callbackLock = new object();
+        private IPEndPoint remoteIpEndPoint;
+        private bool closing = false;
 
-        protected UdpClient receivingUdpClient;
-        private IPEndPoint RemoteIpEndPoint;
-
-        protected HandleBytePacket BytePacketCallback = null;
-        protected HandleOscPacket OscPacketCallback = null;
-
-        readonly private ConcurrentQueue<byte[]> queue = new ConcurrentQueue<byte[]>();
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPListener"/> class.
+        /// </summary>
+        /// <param name="port"></param>
         public UDPListener(int port)
         {
-            Port = port;
-
             // try to open the port 10 times, else fail
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 try
                 {
-                    receivingUdpClient = new UdpClient(port);
+                    this.ReceivingUdpClient = new UdpClient(port);
                     break;
                 }
                 catch (Exception)
                 {
                     // Failed in ten tries, throw the exception and give up
                     if (i >= 9)
+                    {
                         throw;
+                    }
 
                     Thread.Sleep(5);
                 }
             }
-            RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+            this.remoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
             // setup first async event
-            AsyncCallback callBack = new AsyncCallback(ReceiveCallback);
-            receivingUdpClient.BeginReceive(callBack, null);
+            var callBack = new AsyncCallback(this.ReceiveCallback);
+            this.ReceivingUdpClient.BeginReceive(callBack, null);
         }
 
-        public UDPListener(int port, HandleOscPacket callback) : this(port)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPListener"/> class.
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="callback"></param>
+        public UDPListener(int port, HandleOscPacket callback)
+            : this(port)
         {
             this.OscPacketCallback = callback;
         }
 
-        public UDPListener(int port, HandleBytePacket callback) : this(port)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPListener"/> class.
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="callback"></param>
+        public UDPListener(int port, HandleBytePacket callback)
+            : this(port)
         {
             this.BytePacketCallback = callback;
         }
 
+        protected UdpClient ReceivingUdpClient { get; }
+
+        protected HandleBytePacket BytePacketCallback { get; set; }
+
+        protected HandleOscPacket OscPacketCallback { get; set; }
+
+        public void Dispose()
+        {
+            lock (this.callbackLock)
+            {
+                this.closing = true;
+                this.ReceivingUdpClient.Close();
+                this.ReceivingUdpClient.Dispose();
+            }
+        }
+
+        public OscPacket Receive()
+        {
+            if (!this.closing)
+            {
+                if (this.queue.TryDequeue(out var bytes))
+                {
+                    var packet = OscPacket.GetPacket(bytes);
+                    return packet;
+                }
+            }
+
+            return null;
+        }
+
         private void ReceiveCallback(IAsyncResult result)
         {
-            Monitor.Enter(callbackLock);
-            Byte[] bytes = null;
+            Monitor.Enter(this.callbackLock);
+            byte[] bytes = null;
 
             try
             {
-                bytes = receivingUdpClient.EndReceive(result, ref RemoteIpEndPoint);
+                bytes = this.ReceivingUdpClient.EndReceive(result, ref this.remoteIpEndPoint);
             }
             catch (ObjectDisposedException)
             {
@@ -81,11 +122,11 @@ namespace CoreOSC
             // Process bytes
             if (bytes != null && bytes.Length > 0)
             {
-                if (BytePacketCallback != null)
+                if (this.BytePacketCallback != null)
                 {
-                    BytePacketCallback(bytes);
+                    this.BytePacketCallback(bytes);
                 }
-                else if (OscPacketCallback != null)
+                else if (this.OscPacketCallback != null)
                 {
                     OscPacket packet = null;
                     try
@@ -97,46 +138,22 @@ namespace CoreOSC
                         // If there is an error reading the packet, null is sent to the callback
                     }
 
-                    OscPacketCallback(packet);
+                    this.OscPacketCallback(packet);
                 }
                 else
                 {
-                    queue.Enqueue(bytes);
+                    this.queue.Enqueue(bytes);
                 }
             }
 
-            if (!closing)
+            if (!this.closing)
             {
                 // Setup next async event
-                AsyncCallback callBack = new AsyncCallback(ReceiveCallback);
-                receivingUdpClient.BeginReceive(callBack, null);
+                var callBack = new AsyncCallback(this.ReceiveCallback);
+                this.ReceivingUdpClient.BeginReceive(callBack, null);
             }
-            Monitor.Exit(callbackLock);
-        }
 
-        private bool closing = false;
-
-        public void Dispose()
-        {
-            lock (callbackLock)
-            {
-                closing = true;
-                receivingUdpClient.Close();
-                receivingUdpClient.Dispose();
-            }
-        }
-
-        public OscPacket Receive()
-        {
-            if (!closing)
-            {
-                if (queue.TryDequeue(out var bytes))
-                {
-                    var packet = OscPacket.GetPacket(bytes);
-                    return packet;
-                }
-            }
-            return null;
+            Monitor.Exit(this.callbackLock);
         }
     }
 }

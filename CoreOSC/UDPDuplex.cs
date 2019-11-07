@@ -1,45 +1,72 @@
-﻿using System;
-using System.Net;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Net;
+
     public class UDPDuplex : UDPListener
     {
-        public int RemotePort { get; private set; }
-        public string RemoteAddress { get; private set; }
+        private readonly IPEndPoint remoteIpEndPoint2;
 
-        private IPEndPoint RemoteIpEndPoint2;
-
-        public UDPDuplex(string remoteAddress, int remotePort, int port) : base(port)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPDuplex"/> class.
+        /// </summary>
+        /// <param name="remoteAddress"></param>
+        /// <param name="remotePort"></param>
+        /// <param name="port"></param>
+        public UDPDuplex(string remoteAddress, int remotePort, int port)
+            : base(port)
         {
-            RemotePort = remotePort;
-            RemoteAddress = remoteAddress;
+            this.RemotePort = remotePort;
+            this.RemoteAddress = remoteAddress;
 
             var addresses = System.Net.Dns.GetHostAddresses(remoteAddress);
-            if (addresses.Length == 0) throw new Exception("Unable to find IP address for " + remoteAddress);
+            if (addresses.Length == 0)
+            {
+                throw new Exception("Unable to find IP address for " + remoteAddress);
+            }
 
-            RemoteIpEndPoint2 = new IPEndPoint(addresses[0], remotePort);
+            this.remoteIpEndPoint2 = new IPEndPoint(addresses[0], remotePort);
         }
 
-        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleOscPacket callback) : this(remoteAddress, remotePort, port)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPDuplex"/> class.
+        /// </summary>
+        /// <param name="remoteAddress"></param>
+        /// <param name="remotePort"></param>
+        /// <param name="port"></param>
+        /// <param name="callback"></param>
+        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleOscPacket callback)
+            : this(remoteAddress, remotePort, port)
         {
-            OscPacketCallback = callback;
+            this.OscPacketCallback = callback;
         }
 
-        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleBytePacket callback) : this(remoteAddress, remotePort, port)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPDuplex"/> class.
+        /// </summary>
+        /// <param name="remoteAddress"></param>
+        /// <param name="remotePort"></param>
+        /// <param name="port"></param>
+        /// <param name="callback"></param>
+        public UDPDuplex(string remoteAddress, int remotePort, int port, HandleBytePacket callback)
+            : this(remoteAddress, remotePort, port)
         {
-            BytePacketCallback = callback;
+            this.BytePacketCallback = callback;
         }
+
+        public int RemotePort { get; private set; }
+
+        public string RemoteAddress { get; private set; }
 
         public void Send(byte[] message)
         {
-            receivingUdpClient.Send(message, message.Length, RemoteIpEndPoint2);
+            this.ReceivingUdpClient.Send(message, message.Length, this.remoteIpEndPoint2);
         }
 
         public void Send(OscPacket packet)
         {
-            byte[] data = packet.GetBytes();
-            Send(data);
+            var data = packet.GetBytes();
+            this.Send(data);
         }
     }
 }

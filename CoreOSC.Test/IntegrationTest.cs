@@ -23,8 +23,8 @@ namespace CoreOSC.Tests
                     "hello world",
                     new byte[3] { 2, 3, 4 },
                     -123456789123,
-                    new Timetag(DateTime.Now.Date).Tag,
-                    new Timetag(DateTime.Now.Date.AddMonths(1)),
+                    Timetag.FromDateTime(DateTime.Now.Date).Tag,
+                    Timetag.FromDateTime(DateTime.Now.Date.AddMonths(1)),
                     (double)1234567.890,
                     new Symbol("wut wut"),
                     (char)'x',
@@ -33,13 +33,13 @@ namespace CoreOSC.Tests
                     true,
                     false,
                     null,
-                    Double.PositiveInfinity
+                    double.PositiveInfinity
                 );
 
                 sender.Send(msg1);
 
                 OscMessage msgRevc = null;
-                int retries = 5;
+                var retries = 5;
                 do
                 {
                     Task.Delay(1).Wait();
@@ -54,8 +54,8 @@ namespace CoreOSC.Tests
                 Assert.AreEqual("hello world", msgRevc.Arguments[2]);
                 Assert.AreEqual(new byte[3] { 2, 3, 4 }, msgRevc.Arguments[3]);
                 Assert.AreEqual(-123456789123, msgRevc.Arguments[4]);
-                Assert.AreEqual(new Timetag(DateTime.Now.Date), msgRevc.Arguments[5]);
-                Assert.AreEqual(new Timetag(DateTime.Now.Date.AddMonths(1)), msgRevc.Arguments[6]);
+                Assert.AreEqual(Timetag.FromDateTime(DateTime.Now.Date), msgRevc.Arguments[5]);
+                Assert.AreEqual(Timetag.FromDateTime(DateTime.Now.Date.AddMonths(1)), msgRevc.Arguments[6]);
                 Assert.AreEqual((double)1234567.890, msgRevc.Arguments[7]);
                 Assert.AreEqual(new Symbol("wut wut"), msgRevc.Arguments[8]);
                 Assert.AreEqual((char)'x', msgRevc.Arguments[9]);
@@ -64,7 +64,7 @@ namespace CoreOSC.Tests
                 Assert.AreEqual(true, msgRevc.Arguments[12]);
                 Assert.AreEqual(false, msgRevc.Arguments[13]);
                 Assert.AreEqual(null, msgRevc.Arguments[14]);
-                Assert.AreEqual(Double.PositiveInfinity, msgRevc.Arguments[15]);
+                Assert.AreEqual(double.PositiveInfinity, msgRevc.Arguments[15]);
             }
         }
 
@@ -73,26 +73,22 @@ namespace CoreOSC.Tests
         {
             using (var listener = new UDPListener(55555))
             {
-                var sender1 = new CoreOSC.UDPSender("localhost", 55555);
-                var msg1 = new CoreOSC.OscMessage("/test/address1", 23, 42.42f, "hello world", new byte[3] { 2, 3, 4 });
-                var msg2 = new CoreOSC.OscMessage("/test/address2", 34, 24.24f, "hello again", new byte[5] { 5, 6, 7, 8, 9 });
+                var sender1 = new UDPSender("localhost", 55555);
+                var msg1 = new OscMessage("/test/address1", 23, 42.42f, "hello world", new byte[3] { 2, 3, 4 });
+                var msg2 = new OscMessage("/test/address2", 34, 24.24f, "hello again", new byte[5] { 5, 6, 7, 8, 9 });
                 var dt = DateTime.Now;
-                var bundle = new CoreOSC.OscBundle(Utils.DateTimeToTimetag(dt), msg1, msg2);
+                var bundle = new OscBundle(Utils.DateTimeToTimetag(dt), msg1, msg2);
 
                 sender1.Send(bundle);
                 OscBundle recv = null;
-                int retries = 5;
+                var retries = 5;
                 do
                 {
                     Task.Delay(1).Wait();
                     recv = listener.Receive() as OscBundle;
                 } while (recv == null && retries-- > 0);
 
-                Assert.AreEqual(dt.Date, recv.Timestamp.Date);
-                Assert.AreEqual(dt.Hour, recv.Timestamp.Hour);
-                Assert.AreEqual(dt.Minute, recv.Timestamp.Minute);
-                Assert.AreEqual(dt.Second, recv.Timestamp.Second);
-                Assert.AreEqual(dt.Millisecond, recv.Timestamp.Millisecond);
+                Assert.AreEqual(0.0, (dt - Utils.TimetagToDateTime(recv.Timetag.Tag)).TotalMilliseconds, 1.0);
 
                 Assert.AreEqual("/test/address1", recv.Messages[0].Address);
                 Assert.AreEqual(4, recv.Messages[0].Arguments.Count);

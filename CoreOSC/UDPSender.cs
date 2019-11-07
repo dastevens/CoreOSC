@@ -1,55 +1,46 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Net;
+    using System.Net.Sockets;
+
     public class UDPSender
     {
-        public int Port
-        {
-            get { return _port; }
-        }
+        private readonly IPEndPoint remoteIpEndPoint;
+        private readonly Socket sock;
 
-        private int _port;
-
-        public string Address
-        {
-            get { return _address; }
-        }
-
-        private string _address;
-
-        private IPEndPoint RemoteIpEndPoint;
-        private Socket sock;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UDPSender"/> class.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
         public UDPSender(string address, int port)
         {
-            _port = port;
-            _address = address;
-
-            sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            this.sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
             var addresses = System.Net.Dns.GetHostAddresses(address);
-            if (addresses.Length == 0) throw new Exception("Unable to find IP address for " + address);
+            if (addresses.Length == 0)
+            {
+                throw new Exception("Unable to find IP address for " + address);
+            }
 
-            RemoteIpEndPoint = new IPEndPoint(addresses[0], port);
+            this.remoteIpEndPoint = new IPEndPoint(addresses[0], port);
         }
 
         public void Send(byte[] message)
         {
-            sock.SendTo(message, RemoteIpEndPoint);
+            this.sock.SendTo(message, this.remoteIpEndPoint);
         }
 
         public void Send(OscPacket packet)
         {
-            byte[] data = packet.GetBytes();
-            Send(data);
+            var data = packet.GetBytes();
+            this.Send(data);
         }
 
         public void Close()
         {
-            sock.Close();
+            this.sock.Close();
         }
     }
 }

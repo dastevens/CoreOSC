@@ -1,59 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     public class OscBundle : OscPacket
     {
-        private Timetag _timetag;
-
-        public UInt64 Timetag
+        public OscBundle(ulong timetag, params OscMessage[] args)
         {
-            get { return _timetag.Tag; }
-            set { _timetag.Tag = value; }
+            this.Timetag = new Timetag(timetag);
+            this.Messages.AddRange(args);
         }
 
-        public DateTime Timestamp
-        {
-            get { return _timetag.Timestamp; }
-            set { _timetag.Timestamp = value; }
-        }
+        public Timetag Timetag { get; }
 
-        public List<OscMessage> Messages;
-
-        public OscBundle(UInt64 timetag, params OscMessage[] args)
-        {
-            _timetag = new Timetag(timetag);
-            Messages = new List<OscMessage>();
-            Messages.AddRange(args);
-        }
+        public List<OscMessage> Messages { get; } = new List<OscMessage>();
 
         public override byte[] GetBytes()
         {
-            string bundle = "#bundle";
-            int bundleTagLen = Utils.AlignedStringLength(bundle);
-            byte[] tag = setULong(_timetag.Tag);
+            var bundle = "#bundle";
+            var bundleTagLen = Utils.AlignedStringLength(bundle);
+            var tag = SetULong(this.Timetag.Tag);
 
-            List<byte[]> outMessages = new List<byte[]>();
-            foreach (OscMessage msg in Messages)
+            var outMessages = new List<byte[]>();
+            foreach (var msg in this.Messages)
             {
                 outMessages.Add(msg.GetBytes());
             }
 
-            int len = bundleTagLen + tag.Length + outMessages.Sum(x => x.Length + 4);
+            var len = bundleTagLen + tag.Length + outMessages.Sum(x => x.Length + 4);
 
-            int i = 0;
-            byte[] output = new byte[len];
+            var i = 0;
+            var output = new byte[len];
             Encoding.ASCII.GetBytes(bundle).CopyTo(output, i);
             i += bundleTagLen;
             tag.CopyTo(output, i);
             i += tag.Length;
 
-            foreach (byte[] msg in outMessages)
+            foreach (var msg in outMessages)
             {
-                var size = setInt(msg.Length);
+                var size = SetInt(msg.Length);
                 size.CopyTo(output, i);
                 i += size.Length;
 

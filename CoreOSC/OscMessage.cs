@@ -1,41 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace CoreOSC
+﻿namespace CoreOSC
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     public class OscMessage : OscPacket
     {
-        public string Address;
-        public List<object> Arguments;
-
         public OscMessage(string address, params object[] args)
         {
             this.Address = address;
-            Arguments = new List<object>();
-            Arguments.AddRange(args);
+            this.Arguments = new List<object>();
+            this.Arguments.AddRange(args);
         }
+
+        public string Address { get; }
+
+        public List<object> Arguments { get; }
 
         public override byte[] GetBytes()
         {
-            List<byte[]> parts = new List<byte[]>();
+            var parts = new List<byte[]>();
 
-            List<object> currentList = Arguments;
-            int ArgumentsIndex = 0;
+            var currentList = this.Arguments;
+            var argumentsIndex = 0;
 
-            string typeString = ",";
-            int i = 0;
+            var typeString = ",";
+            var i = 0;
             while (i < currentList.Count)
             {
                 var arg = currentList[i];
 
-                string type = (arg != null) ? arg.GetType().ToString() : "null";
+                var type = (arg != null) ? arg.GetType().ToString() : "null";
                 switch (type)
                 {
                     case "System.Int32":
                         typeString += "i";
-                        parts.Add(setInt((int)arg));
+                        parts.Add(SetInt((int)arg));
                         break;
 
                     case "System.Single":
@@ -46,65 +47,67 @@ namespace CoreOSC
                         else
                         {
                             typeString += "f";
-                            parts.Add(setFloat((float)arg));
+                            parts.Add(SetFloat((float)arg));
                         }
+
                         break;
 
                     case "System.String":
                         typeString += "s";
-                        parts.Add(setString((string)arg));
+                        parts.Add(SetString((string)arg));
                         break;
 
                     case "System.Byte[]":
                         typeString += "b";
-                        parts.Add(setBlob((byte[])arg));
+                        parts.Add(SetBlob((byte[])arg));
                         break;
 
                     case "System.Int64":
                         typeString += "h";
-                        parts.Add(setLong((Int64)arg));
+                        parts.Add(SetLong((long)arg));
                         break;
 
                     case "System.UInt64":
                         typeString += "t";
-                        parts.Add(setULong((UInt64)arg));
+                        parts.Add(SetULong((ulong)arg));
                         break;
 
                     case "CoreOSC.Timetag":
                         typeString += "t";
-                        parts.Add(setULong(((Timetag)arg).Tag));
+                        parts.Add(SetULong(((Timetag)arg).Tag));
                         break;
 
                     case "System.Double":
-                        if (Double.IsPositiveInfinity((double)arg))
+                        if (double.IsPositiveInfinity((double)arg))
                         {
                             typeString += "I";
                         }
                         else
                         {
                             typeString += "d";
-                            parts.Add(setDouble((double)arg));
+                            parts.Add(SetDouble((double)arg));
                         }
+
                         break;
 
                     case "CoreOSC.Symbol":
                         typeString += "S";
-                        parts.Add(setString(((Symbol)arg).Value));
+                        parts.Add(SetString(((Symbol)arg).Value));
                         break;
 
                     case "System.Char":
                         typeString += "c";
-                        parts.Add(setChar((char)arg));
+                        parts.Add(SetChar((char)arg));
                         break;
 
                     case "CoreOSC.RGBA":
                         typeString += "r";
-                        parts.Add(setRGBA((RGBA)arg));
+                        parts.Add(SetRGBA((RGBA)arg));
                         break;
 
                     case "CoreOSC.Midi":
                         typeString += "m";
-                        parts.Add(setMidi((Midi)arg));
+                        parts.Add(SetMidi((Midi)arg));
                         break;
 
                     case "System.Boolean":
@@ -121,13 +124,18 @@ namespace CoreOSC
                     case "System.Object[]":
                     case "System.Collections.Generic.List`1[System.Object]":
                         if (arg.GetType() == typeof(object[]))
+                        {
                             arg = ((object[])arg).ToList();
+                        }
 
-                        if (Arguments != currentList)
+                        if (this.Arguments != currentList)
+                        {
                             throw new Exception("Nested Arrays are not supported");
+                        }
+
                         typeString += "[";
                         currentList = (List<object>)arg;
-                        ArgumentsIndex = i;
+                        argumentsIndex = i;
                         i = 0;
                         continue;
 
@@ -136,30 +144,30 @@ namespace CoreOSC
                 }
 
                 i++;
-                if (currentList != Arguments && i == currentList.Count)
+                if (currentList != this.Arguments && i == currentList.Count)
                 {
                     // End of array, go back to main Argument list
                     typeString += "]";
-                    currentList = Arguments;
-                    i = ArgumentsIndex + 1;
+                    currentList = this.Arguments;
+                    i = argumentsIndex + 1;
                 }
             }
 
-            int addressLen = (Address.Length == 0 || Address == null) ? 0 : Utils.AlignedStringLength(Address);
-            int typeLen = Utils.AlignedStringLength(typeString);
+            var addressLen = (this.Address.Length == 0 || this.Address == null) ? 0 : Utils.AlignedStringLength(this.Address);
+            var typeLen = Utils.AlignedStringLength(typeString);
 
-            int total = addressLen + typeLen + parts.Sum(x => x.Length);
+            var total = addressLen + typeLen + parts.Sum(x => x.Length);
 
-            byte[] output = new byte[total];
+            var output = new byte[total];
             i = 0;
 
-            Encoding.ASCII.GetBytes(Address).CopyTo(output, i);
+            Encoding.ASCII.GetBytes(this.Address).CopyTo(output, i);
             i += addressLen;
 
             Encoding.ASCII.GetBytes(typeString).CopyTo(output, i);
             i += typeLen;
 
-            foreach (byte[] part in parts)
+            foreach (var part in parts)
             {
                 part.CopyTo(output, i);
                 i += part.Length;
