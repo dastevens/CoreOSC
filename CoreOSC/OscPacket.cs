@@ -284,8 +284,9 @@
 
         private static byte[] GetBlob(byte[] msg, int index)
         {
-            var size = GetInt(msg, index);
-            return msg.SubArray(index + 4, size);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.BlobConverter().Deserialize(dWords, out var value);
+            return value.ToArray();
         }
 
         private static ulong GetULong(byte[] msg, int index)
@@ -363,14 +364,9 @@
 
         protected static byte[] SetBlob(byte[] value)
         {
-            var len = value.Length + 4;
-            len += 4 - (len % 4);
-
-            var msg = new byte[len];
-            var size = SetInt(value.Length);
-            size.CopyTo(msg, 0);
-            value.CopyTo(msg, 4);
-            return msg;
+            return new BlobConverter().Serialize(value)
+                .SelectMany(dWord => dWord.Bytes)
+                .ToArray();
         }
 
         protected static byte[] SetLong(long value)
