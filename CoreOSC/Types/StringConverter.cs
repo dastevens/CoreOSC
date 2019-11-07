@@ -9,6 +9,12 @@
     {
         public IEnumerable<DWord> Deserialize(IEnumerable<DWord> dWords, out string value)
         {
+            if (!dWords.Any())
+            {
+                value = "";
+                return dWords;
+            }
+
             var next = new string(Encoding.ASCII.GetChars(dWords.First().Bytes))
                 .Replace("\0", string.Empty);
             if (dWords.First().Bytes.Any(b => b == 0))
@@ -32,14 +38,17 @@
 
         private IEnumerable<DWord> Serialize(IEnumerable<char> chars)
         {
-            if (!chars.Any())
+            var firstChars = chars.Take(4);
+            var dWord = new DWord(Encoding.ASCII.GetBytes(firstChars.ToArray()));
+            if (firstChars.Count() < 4)
             {
-                return new DWord[0];
+                return new[] { dWord };
             }
-
-            var next = chars.Take(4);
-            var dWord = new DWord(Encoding.ASCII.GetBytes(next.ToArray()));
-            return new[] { dWord }.Concat(Serialize(chars.Skip(4)));
+            else
+            {
+                var nextChars = chars.Skip(4);
+                return new[] { dWord }.Concat(Serialize(nextChars));
+            }
         }
     }
 }
