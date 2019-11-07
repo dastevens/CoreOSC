@@ -1,10 +1,10 @@
 ﻿namespace CoreOSC
 {
-    using CoreOSC.Types;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using CoreOSC.Types;
 
     public abstract class OscPacket
     {
