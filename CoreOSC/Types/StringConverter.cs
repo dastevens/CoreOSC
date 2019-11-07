@@ -7,24 +7,21 @@
 
     public class StringConverter : IConverter<string>
     {
-        public (string value, IEnumerable<DWord> dWords) Deserialize(IEnumerable<DWord> dWords)
+        public IEnumerable<DWord> Deserialize(IEnumerable<DWord> dWords, out string value)
         {
             var next = new string(Encoding.ASCII.GetChars(dWords.First().Bytes))
                 .Replace("\0", string.Empty);
             if (dWords.First().Bytes.Any(b => b == 0))
             {
                 // Terminator found
-                return (
-                    value: next,
-                    dWords: dWords.Skip(1));
+                value = next;
+                return dWords.Skip(1);
             }
             else
             {
-                (var nextValue, var nextDWords) = Deserialize(dWords.Skip(1));
-                return (
-                    value: next + nextValue,
-                    dWords: nextDWords
-                    );
+                var nextDWords = Deserialize(dWords.Skip(1), out var nextValue);
+                value = next + nextValue;
+                return nextDWords;
             }
         }
 

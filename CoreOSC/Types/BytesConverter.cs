@@ -7,21 +7,17 @@
 
     public class BytesConverter : IConverter<IEnumerable<byte>>
     {
-        public (IEnumerable<byte> value, IEnumerable<DWord> dWords) Deserialize(IEnumerable<DWord> dWords)
+        public IEnumerable<DWord> Deserialize(IEnumerable<DWord> dWords, out IEnumerable<byte> value)
         {
             if (!dWords.Any())
             {
-                return (
-                    value: new byte[0],
-                    dWords: dWords
-                    );
+                value = new byte[0];
+                return dWords;
             }
             var next = dWords.First().Bytes;
-            (var nextValue, var nextDWords) = Deserialize(dWords.Skip(1));
-            return (
-                value: next.Concat(nextValue),
-                dWords: nextDWords
-                );
+            var nextDWords = Deserialize(dWords.Skip(1), out var nextValue);
+            value = next.Concat(nextValue);
+            return nextDWords;
         }
 
         public IEnumerable<DWord> Serialize(IEnumerable<byte> value)

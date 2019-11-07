@@ -263,20 +263,20 @@
 
         private static int GetInt(byte[] msg, int index)
         {
-            (var value, _) = new Types.IntConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) });
+            new Types.IntConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) }, out var value);
             return value;
         }
 
         private static float GetFloat(byte[] msg, int index)
         {
-            (var value, _) = new Types.FloatConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) });
+            new Types.FloatConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) }, out var value);
             return value;
         }
 
         private static string GetString(byte[] msg, int index)
         {
             var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
-            (var value, _) = new Types.StringConverter().Deserialize(dWords);
+            new Types.StringConverter().Deserialize(dWords, out var value);
             return value;
         }
 

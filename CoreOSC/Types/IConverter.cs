@@ -4,7 +4,7 @@
 
     public interface IConverter<T>
     {
-        (T value, IEnumerable<DWord> dWords) Deserialize(IEnumerable<DWord> dWords);
+        IEnumerable<DWord> Deserialize(IEnumerable<DWord> dWords, out T value);
         IEnumerable<DWord> Serialize(T value);
     }
 }

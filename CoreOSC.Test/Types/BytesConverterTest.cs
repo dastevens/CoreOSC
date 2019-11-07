@@ -90,7 +90,7 @@ namespace CoreOSC.Test.Types
             var expectedDWords = new DWord[] { };
             var sut = new BytesConverter();
 
-            (var value, var dWords) = sut.Deserialize(input);
+            var dWords = sut.Deserialize(input, out var value);
 
             Assert.AreEqual(expectedValue, value);
             Assert.AreEqual(expectedDWords, dWords);
@@ -104,7 +104,7 @@ namespace CoreOSC.Test.Types
             var expectedDWords = new DWord[] { };
             var sut = new BytesConverter();
 
-            (var value, var dWords) = sut.Deserialize(input);
+            var dWords = sut.Deserialize(input, out var value);
 
             Assert.AreEqual(expectedValue, value);
             Assert.AreEqual(expectedDWords, dWords);
@@ -118,7 +118,7 @@ namespace CoreOSC.Test.Types
             var expectedDWords = new DWord[] { };
             var sut = new BytesConverter();
 
-            (var value, var dWords) = sut.Deserialize(input);
+            var dWords = sut.Deserialize(input, out var value);
 
             Assert.AreEqual(expectedValue, value);
             Assert.AreEqual(expectedDWords, dWords);

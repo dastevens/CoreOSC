@@ -6,12 +6,10 @@
 
     public class IntConverter : IConverter<int>
     {
-        public (int value, IEnumerable<DWord> dWords) Deserialize(IEnumerable<DWord> dWords)
+        public IEnumerable<DWord> Deserialize(IEnumerable<DWord> dWords, out int value)
         {
-            return (
-                value: BitConverter.ToInt32(dWords.First().Reverse().Bytes, 0),
-                dWords: dWords.Skip(1)
-                );
+            value = BitConverter.ToInt32(dWords.First().Reverse().Bytes, 0);
+            return dWords.Skip(1);
         }
 
         public IEnumerable<DWord> Serialize(int value)
