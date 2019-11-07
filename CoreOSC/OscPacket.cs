@@ -1,5 +1,6 @@
 ﻿namespace CoreOSC
 {
+    using CoreOSC.Types;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -274,23 +275,9 @@
 
         private static string GetString(byte[] msg, int index)
         {
-            string output = null;
-            var i = index + 4;
-            for (; (i - 1) < msg.Length; i += 4)
-            {
-                if (msg[i - 1] == 0)
-                {
-                    output = Encoding.ASCII.GetString(msg.SubArray(index, i - index));
-                    break;
-                }
-            }
-
-            if (i >= msg.Length && output == null)
-            {
-                throw new Exception("No null terminator after type string");
-            }
-
-            return output.Replace("\0", string.Empty);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            (var value, _) = new Types.StringConverter().Deserialize(dWords);
+            return value;
         }
 
         private static byte[] GetBlob(byte[] msg, int index)
@@ -363,18 +350,9 @@
 
         protected static byte[] SetString(string value)
         {
-            var len = value.Length + (4 - (value.Length % 4));
-            if (len <= value.Length)
-            {
-                len += 4;
-            }
-
-            var msg = new byte[len];
-
-            var bytes = Encoding.ASCII.GetBytes(value);
-            bytes.CopyTo(msg, 0);
-
-            return msg;
+            return new StringConverter().Serialize(value)
+                .SelectMany(dWord => dWord.Bytes)
+                .ToArray();
         }
 
         protected static byte[] SetBlob(byte[] value)
