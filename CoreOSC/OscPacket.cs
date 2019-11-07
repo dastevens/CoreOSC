@@ -298,17 +298,9 @@
 
         private static long GetLong(byte[] msg, int index)
         {
-            var var = new byte[8];
-            var[7] = msg[index];
-            var[6] = msg[index + 1];
-            var[5] = msg[index + 2];
-            var[4] = msg[index + 3];
-            var[3] = msg[index + 4];
-            var[2] = msg[index + 5];
-            var[1] = msg[index + 6];
-            var[0] = msg[index + 7];
-
-            return BitConverter.ToInt64(var, 0);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.LongConverter().Deserialize(dWords, out var value);
+            return value;
         }
 
         private static double GetDouble(byte[] msg, int index)
@@ -371,17 +363,9 @@
 
         protected static byte[] SetLong(long value)
         {
-            var rev = BitConverter.GetBytes(value);
-            var output = new byte[8];
-            output[0] = rev[7];
-            output[1] = rev[6];
-            output[2] = rev[5];
-            output[3] = rev[4];
-            output[4] = rev[3];
-            output[5] = rev[2];
-            output[6] = rev[1];
-            output[7] = rev[0];
-            return output;
+            return new LongConverter().Serialize(value)
+                .SelectMany(dWord => dWord.Bytes)
+                .ToArray();
         }
 
         protected static byte[] SetULong(ulong value)
