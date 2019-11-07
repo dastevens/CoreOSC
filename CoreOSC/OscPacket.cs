@@ -263,13 +263,15 @@
 
         private static int GetInt(byte[] msg, int index)
         {
-            new Types.IntConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) }, out var value);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.IntConverter().Deserialize(dWords, out var value);
             return value;
         }
 
         private static float GetFloat(byte[] msg, int index)
         {
-            new Types.FloatConverter().Deserialize(new[] { new Types.DWord(msg.Skip(index).Take(4).ToArray()) }, out var value);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.FloatConverter().Deserialize(dWords, out var value);
             return value;
         }
 
@@ -335,7 +337,9 @@
 
         private static Midi GetMidi(byte[] msg, int index)
         {
-            return new Midi(msg[index], msg[index + 1], msg[index + 2], msg[index + 3]);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.MidiConverter().Deserialize(dWords, out var value);
+            return value;
         }
 
         protected static byte[] SetInt(int value)
@@ -434,12 +438,7 @@
 
         protected static byte[] SetMidi(Midi value)
         {
-            var output = new byte[4];
-            output[0] = value.Port;
-            output[1] = value.Status;
-            output[2] = value.Data1;
-            output[3] = value.Data2;
-            return output;
+            return new Types.MidiConverter().Serialize(value).First().Bytes;
         }
     }
 }
