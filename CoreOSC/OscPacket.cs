@@ -327,7 +327,9 @@
 
         private static char GetChar(byte[] msg, int index)
         {
-            return (char)msg[index + 3];
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.CharConverter().Deserialize(dWords, out var value);
+            return value;
         }
 
         private static RGBA GetRGBA(byte[] msg, int index)
@@ -418,12 +420,7 @@
 
         protected static byte[] SetChar(char value)
         {
-            var output = new byte[4];
-            output[0] = 0;
-            output[1] = 0;
-            output[2] = 0;
-            output[3] = (byte)value;
-            return output;
+            return new Types.CharConverter().Serialize(value).First().Bytes;
         }
 
         protected static byte[] SetRGBA(RGBA value)
