@@ -291,9 +291,9 @@
 
         private static ulong GetULong(byte[] msg, int index)
         {
-            var val = ((ulong)msg[index] << 56) + ((ulong)msg[index + 1] << 48) + ((ulong)msg[index + 2] << 40) + ((ulong)msg[index + 3] << 32)
-                    + ((ulong)msg[index + 4] << 24) + ((ulong)msg[index + 5] << 16) + ((ulong)msg[index + 6] << 8) + ((ulong)msg[index + 7] << 0);
-            return val;
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.ULongConverter().Deserialize(dWords, out var value);
+            return value;
         }
 
         private static long GetLong(byte[] msg, int index)
@@ -370,17 +370,9 @@
 
         protected static byte[] SetULong(ulong value)
         {
-            var rev = BitConverter.GetBytes(value);
-            var output = new byte[8];
-            output[0] = rev[7];
-            output[1] = rev[6];
-            output[2] = rev[5];
-            output[3] = rev[4];
-            output[4] = rev[3];
-            output[5] = rev[2];
-            output[6] = rev[1];
-            output[7] = rev[0];
-            return output;
+            return new ULongConverter().Serialize(value)
+                .SelectMany(dWord => dWord.Bytes)
+                .ToArray();
         }
 
         protected static byte[] SetDouble(double value)
