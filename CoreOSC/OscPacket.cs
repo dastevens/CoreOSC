@@ -327,7 +327,9 @@
 
         private static RGBA GetRGBA(byte[] msg, int index)
         {
-            return new RGBA(msg[index], msg[index + 1], msg[index + 2], msg[index + 3]);
+            var dWords = new BytesConverter().Serialize(msg.Skip(index)).ToArray();
+            new Types.RGBAConverter().Deserialize(dWords, out var value);
+            return value;
         }
 
         private static Midi GetMidi(byte[] msg, int index)
@@ -397,12 +399,7 @@
 
         protected static byte[] SetRGBA(RGBA value)
         {
-            var output = new byte[4];
-            output[0] = value.R;
-            output[1] = value.G;
-            output[2] = value.B;
-            output[3] = value.A;
-            return output;
+            return new Types.RGBAConverter().Serialize(value).First().Bytes;
         }
 
         protected static byte[] SetMidi(Midi value)
