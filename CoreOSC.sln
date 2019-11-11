@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreOSC", "CoreOSC\CoreOSC.csproj", "{363C1E30-8802-422D-AC37-A61F9EB284B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreOSC.Test", "CoreOSC.Test\CoreOSC.Test.csproj", "{6B5914DC-8407-49EA-BD52-9F41EADA1A72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreOSC.Test", "CoreOSC.Test\CoreOSC.Test.csproj", "{6B5914DC-8407-49EA-BD52-9F41EADA1A72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

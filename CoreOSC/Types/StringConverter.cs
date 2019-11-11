@@ -25,7 +25,7 @@
             }
             else
             {
-                var nextDWords = Deserialize(dWords.Skip(1), out var nextValue);
+                var nextDWords = Deserialize(dWords.Skip(1), out string nextValue);
                 value = next + nextValue;
                 return nextDWords;
             }

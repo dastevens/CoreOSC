@@ -15,7 +15,7 @@
                 return dWords;
             }
             var next = dWords.First().Bytes;
-            var nextDWords = Deserialize(dWords.Skip(1), out var nextValue);
+            var nextDWords = Deserialize(dWords.Skip(1), out IEnumerable<byte> nextValue);
             value = next.Concat(nextValue);
             return nextDWords;
         }
