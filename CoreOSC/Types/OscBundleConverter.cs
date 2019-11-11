@@ -9,23 +9,28 @@
     {
         private readonly StringConverter stringConverter = new StringConverter();
         private readonly TimetagConverter timetagConverter = new TimetagConverter();
+        private readonly IntConverter intConverter = new IntConverter();
         private readonly OscMessageConverter messageConverter = new OscMessageConverter();
 
         public IEnumerable<DWord> Deserialize(IEnumerable<DWord> dWords, out OscBundle value)
         {
             var afterBundleHeader = DeserializeBundleHeader(dWords);
             var afterTimetag = DeserializeTimetag(afterBundleHeader, out var timetag);
-            var afterMessages = DeserializeMessages(afterTimetag, out var messages);
+            var afterLength = DeserializeLength(afterTimetag, out var length);
+            _ = DeserializeMessages(afterLength.Take(length / 4), out var messages);
             value = new OscBundle(timetag, messages);
-            return afterMessages;
+            return afterLength.Skip(length / 4);
         }
 
         public IEnumerable<DWord> Serialize(OscBundle value)
         {
+            var messages = SerializeMessages(value.Messages);
+            var length = messages.Count() * 4;
             return
                 SerializeBundleHeader()
                 .Concat(SerializeTimetag(value.Timetag))
-                .Concat(SerializeMessages(value.Messages));
+                .Concat(SerializeLength(length))
+                .Concat(messages);
         }
 
         private IEnumerable<DWord> DeserializeBundleHeader(IEnumerable<DWord> dWords)
@@ -46,6 +51,16 @@
         private IEnumerable<DWord> SerializeTimetag(Timetag timetag)
         {
             return timetagConverter.Serialize(timetag);
+        }
+
+        private IEnumerable<DWord> DeserializeLength(IEnumerable<DWord> dWords, out int length)
+        {
+            return intConverter.Deserialize(dWords, out length);
+        }
+
+        private IEnumerable<DWord> SerializeLength(int length)
+        {
+            return intConverter.Serialize(length);
         }
 
         private IEnumerable<DWord> DeserializeMessages(IEnumerable<DWord> dWords, out IEnumerable<OscMessage> messages)
