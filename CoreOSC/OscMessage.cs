@@ -7,6 +7,11 @@
 
     public struct OscMessage
     {
+        public OscMessage(Address address)
+            : this(address, new object[0])
+        {
+        }
+
         public OscMessage(Address address, IEnumerable<object> arguments)
         {
             this.Address = address;
