@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SuperCollider.API
 {
-    public class Version : IRequest<VersionReply>
+    public class Version
     {
         public OscMessage Message => new OscMessage(new Address("/version"));
     }

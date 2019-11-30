@@ -5,7 +5,7 @@
     using System.Text;
     using CoreOSC;
 
-    public class Done : IResponse<Done>
+    public class Done
     {
         private readonly static Address doneAddress = new Address("/done");
 

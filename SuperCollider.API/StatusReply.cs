@@ -9,31 +9,14 @@ namespace SuperCollider.API
     {
         private readonly static Address statusReplyAddress = new Address("/status.reply");
 
-        //int	1. unused.
         public int Unused { get; set; }
-
-        //int number of unit generators.
         public int NumberOfUnitGenerators { get; set; }
-
-        //int number of synths.
         public int NumberOfSynths { get; set; }
-
-        //int number of groups.
         public int NumberOfGroups { get; set; }
-
-        //int number of loaded synth definitions.
         public int NumberOfLoadedSynthDefinitions { get; set; }
-
-        //float average percent CPU usage for signal processing
         public float AveragePercentCPUUsage { get; set; }
-
-        //float peak percent CPU usage for signal processing
         public float PeakPercentCPUUsage { get; set; }
-
-        //double nominal sample rate
         public double NominalSampleRate { get; set; }
-
-        //double actual sample rate
         public double ActualSampleRate { get; set; }
 
         public static StatusReply FromMessage(OscMessage oscMessage)

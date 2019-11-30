@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SuperCollider.API
 {
-    public class Status : IRequest<StatusReply>
+    public class Status
     {
         public OscMessage Message => new OscMessage(new Address("/status"));
     }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SuperCollider.API
 {
-    public class Quit : IRequest<Done>
+    public class Quit
     {
         public OscMessage Message => new OscMessage(new Address("/quit"));
     }

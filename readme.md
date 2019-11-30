@@ -12,16 +12,21 @@ CoreOSC is a small library designed to make interacting with Open Sound Control 
 Roadmap
 -------
 
-Planned improvements to code base
+Completed improvements to code base
 
-1. Fix tests - OK
+1. Fix tests
 2. Tidy up code
    + Add StyleCop and fix issues
    + Make OSC classes immutable
    + Remove casts from/to OscPacket
 3. Break out type switch into separate TypeConverter classes
-4. Make UDP code async, rename as OscClient
-5. Make nuget package (with AppVeyor?) and release to nuget
+4. Remove UDP code, use extension method to System.Net.Sockets.UdpClient
+
+Planned future improvements
+
+5. Map OscFalse, OscTrue, OscInfinitum, OscNil etc. to false/true values
+6. Update readme.md with new interface and examples
+7. Make nuget package (with AppVeyor?) and release to nuget
 
 History
 --------
