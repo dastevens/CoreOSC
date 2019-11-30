@@ -103,13 +103,8 @@
                 var dWords = typeConverter.Converter.Serialize(argument);
                 result.AddRange(dWords);
             }
-            return result;
 
-            return arguments.Select(
-                argument => typeConverters
-                    .Single(typeConverter => typeConverter.Converter.ForType == argument.GetType())
-                    .Converter.Serialize(argument)
-            ).SelectMany(dWords => dWords);
+            return result;
         }
 
         private IEnumerable<DWord> DeserializeArguments(IEnumerable<DWord> dWords, IEnumerable<IConverter> typeConverters, out IEnumerable<object> values)
@@ -120,6 +115,7 @@
                 dWords = typeConverter.Deserialize(dWords, out object value);
                 valuesList.Add(value);
             }
+
             values = valuesList;
             return dWords;
         }
