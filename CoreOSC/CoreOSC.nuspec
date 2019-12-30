@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>dastevens</authors>
+    <owners>dastevens</owners>
+    <projectUrl>https://github.com/dastevens/CoreOSC</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CoreOSC - OSC Library for .NET Standard 2.0</description>
+    <repository type="git" url="https://github.com/dastevens/CoreOSC"/>
+    <summary>CoreOSC - OSC Library for .NET Standard 2.0</summary>
+  </metadata>
+</package>
