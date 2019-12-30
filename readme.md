@@ -21,11 +21,11 @@ Completed improvements to code base
    + Remove casts from/to OscPacket
 3. Break out type switch into separate TypeConverter classes
 4. Remove UDP code, use extension method to System.Net.Sockets.UdpClient
+5. Update readme.md with new interface and examples
 
 Planned future improvements
 
-5. Map OscFalse, OscTrue, OscInfinitum, OscNil etc. to false/true values
-6. Update readme.md with new interface and examples
+6. Map OscFalse, OscTrue, OscInfinitum, OscNil etc. to false/true values
 7. Make nuget package (with AppVeyor?) and release to nuget
 
 History
@@ -102,6 +102,7 @@ This example sends an OSC message to the local machine on port 57100 without any
 Example 2: Adding arguments to a message
 ---------------------------------------------
 
+```
    var message = new OscMessage(
         address: new Address("/example2"),
         arguments: new object[]
@@ -122,6 +123,7 @@ Example 2: Adding arguments to a message
             OscNil.Nil,                 // N - Nil.No bytes are allocated in the argument data. (null)
             OscInfinitum.Infinitum,     // I - Infinitum.No bytes are allocated in the argument data. (Double.PositiveInfinity)
         });
+```
 
 The example above constructs an OscMessage with arguments. In the sample code, a message with address /example2 is constructed, and an argument of each supported type is added.
                     
