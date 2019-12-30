@@ -12,7 +12,7 @@ CoreOSC is a small library designed to make interacting with Open Sound Control 
 Roadmap
 -------
 
-Planned improvements to code base
+Completed improvements to code base
 
 1. Fix tests - OK
 2. Tidy up code
@@ -20,8 +20,13 @@ Planned improvements to code base
    + Make OSC classes immutable
    + Remove casts from/to OscPacket
 3. Break out type switch into separate TypeConverter classes
-4. Make UDP code async, rename as OscClient
-5. Make nuget package (with AppVeyor?) and release to nuget
+4. Remove UDP code, use extension method to System.Net.Sockets.UdpClient
+
+Planned future improvements
+
+5. Map OscFalse, OscTrue, OscInfinitum, OscNil etc. to false/true values
+6. Update readme.md with new interface and examples
+7. Make nuget package (with AppVeyor?) and release to nuget
 
 History
 --------
@@ -49,12 +54,11 @@ Supported Types
 * F	- False. No bytes are allocated in the argument data. (System.Boolean)
 * N	- Nil. No bytes are allocated in the argument data. (null)
 * I	- Infinitum. No bytes are allocated in the argument data. (Double.PositiveInfinity)
+
+Note that nested arrays (arrays within arrays) are not supported, the OSC specification is unclear about whether that it is even allowed.
+
 * [	- Indicates the beginning of an array. The tags following are for data in the Array until a close brace tag is reached. (System.Object[] / List\<object\>)
 * ]	- Indicates the end of an array.
-
-(Note that nested arrays (arrays within arrays) are not supported, the OSC specification is unclear about whether that it is even allowed)
-
-
 
 License
 -------
@@ -68,88 +72,129 @@ Using The Library
 
 To use the library add a reference to CoreOSC.dll in your .NET project. CoreOSC should now be available to use in your code under that namespace "CoreOSC". 
 
-Example: Sending a message
---------------------------
+Example 1: Sending a message without arguments
+----------------------------------------------
 
-	class Program
-	{
-		static void Main(string[] args)
-		{
-			var message = new CoreOSC.OscMessage("/test/1", 23, 42.01f, "hello world");
-			var sender = new CoreOSC.UDPSender("127.0.0.1", 55555);
-			sender.Send(message);
-		}
-	}
+    using CoreOSC;
+    using CoreOSC.IO;
+    using System;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
 
-This example sends an OSC message to the local machine on port 55555 containing 3 arguments: an integer with a value of 23, a floating point number with the value 42.01 and the string "hello world". If another program is listening to port 55555 it will receive the message and be able to use the data sent.
+    namespace Example1
+    {
+        class Program
+        {
+            static async Task Main(string[] args)
+            {
+                using (var udpClient = new UdpClient("127.0.0.1", 57100))
+                {
+                    var message = new OscMessage(new Address("/example1"));
 
-Example: Receiving a Message (Synchronous)
-------------------------------------------
+                    await udpClient.SendMessageAsync(message);
+                }
+            }
+        }
+    }
 
-	class Program
-	{
-		static void Main(string[] args)
-		{
-			var listener = new UDPListener(55555);
-			OscMessage messageReceived = null;
-			while (messageReceived == null)
-			{
-				messageReceived = (OscMessage)listener.Receive();
-				Thread.Sleep(1);
-			}
-			Console.WriteLine("Received a message!");
-		}
-	}
+This example sends an OSC message to the local machine on port 57100 without any arguments to the address /example1.
 
-This shows a very simple way of waiting for incoming messages. The listener.Receive() method will check if the listener has received any new messages since it was last called. It will poll for a message every millisecond. If there is a new message that has not been returned it will assign messageReceived to point to that message. If no message has been received since the last call to Receive it will return null.
+Example 2: Adding arguments to a message
+---------------------------------------------
 
-Example: Receiving a Message (Asynchronous)
--------------------------------------------
+   var message = new OscMessage(
+        address: new Address("/example2"),
+        arguments: new object[]
+        {
+            42,                         // i - int32 (System.Int32)
+            3.14159F,                   // f - float32 (System.Single)
+            "A string",                 // s - OSC-string (System.String)
+            new byte[] { 1, 2, 3 },     // b - OSC-blob (System.Byte[])
+            123456L,                    // h - 64 bit big-endian two's complement integer (System.Int64)
+            new Timetag(123456U),       // t - OSC-timetag (System.UInt64 / CoreOSC.Timetag)
+            3.14159D,                   // d - 64 bit ("double") IEEE 754 floating point number (System.Double)
+            new Symbol("A symbol"),     // S - Alternate type represented as an OSC-string (for example, for systems that differentiate "symbols" from "strings") (CoreOSC.Symbol)
+            'c',                        // c - an ascii character, sent as 32 bits(System.Char)
+            new RGBA(255, 0, 0, 128),   // r - 32 bit RGBA color(CoreOSC.RGBA)
+            new Midi(0, 0, 20, 64),     // m - 4 byte MIDI message.Bytes from MSB to LSB are: port id, status byte, data1, data2 (CoreOSC.Midi)
+            OscTrue.True,               // T - True.No bytes are allocated in the argument data. (System.Boolean)
+            OscFalse.False,             // F - False.No bytes are allocated in the argument data. (System.Boolean)
+            OscNil.Nil,                 // N - Nil.No bytes are allocated in the argument data. (null)
+            OscInfinitum.Infinitum,     // I - Infinitum.No bytes are allocated in the argument data. (Double.PositiveInfinity)
+        });
 
-	class Program
-	{
-		public void Main(string[] args)
-		{
-			// The cabllback function
-			HandleOscPacket callback = delegate(OscPacket packet)
-			{
-				var messageReceived = (OscMessage)packet;
-				Console.WriteLine("Received a message!");
-			};
+The example above constructs an OscMessage with arguments. In the sample code, a message with address /example2 is constructed, and an argument of each supported type is added.
+                    
+Example 3: Receiving a Message
+------------------------------
 
-			var listener = new UDPListener(55555, callback);
+    using CoreOSC;
+    using CoreOSC.IO;
+    using System;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
 
-			Console.WriteLine("Press enter to stop");
-			Console.ReadLine();
-			listener.Close();
-		}
-	}
+    namespace Example3
+    {
+        class Program
+        {
+            static async Task Main(string[] args)
+            {
+                using (var udpClient = new UdpClient("127.0.0.1", 57100))
+                {
+                    var response = await udpClient.ReceiveMessageAsync();
 
-By giving UDPListener a callback you don't have to periodically check for incoming messages. The listener will simply invoke the callback whenever a message is received. You are free to implement any code you need inside the callback.
+                    Console.WriteLine(response.Address.Value);
+                    // Do something with the arguments, (depending on the address)
+                    foreach (var argument in response.Arguments)
+                    {
+                        Console.WriteLine(argument.GetType());
+                    }
+                }
+            }
+        }
+    }
 
-Example: UDPDuplex (Asynchronous)
--------------------------------------------
+Incoming messages can be accessed with the ReceiveMessageAsync extension method. The message has an address and an array of arguments.
 
-	class Program
-	{
-		public void Main(string[] args)
-		{
-			// The cabllback function
-			HandleOscPacket callback = delegate(OscPacket packet)
-			{
-				var messageReceived = (OscMessage)packet;
-				Console.WriteLine("Received a message!");
-			};
+In example 3, the address and then the type of each argument are printed to the console. In a real situation, the types of the arguments
+will be known by the application. This would typically depend on the address of the message. You would then cast each argument to its
+type to get the value of each argument.
 
-			var duplex = new UDPDuplex("remotehost.com",4444,55555, callback);
+Example 4: Receiving a message with arguments
+---------------------------------------------
 
-			var message = new CoreOSC.OscMessage("/xremote");
-			duplex.Send(message);
+    using CoreOSC;
+    using CoreOSC.IO;
+    using System;
+    using System.Linq;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
 
-			Console.WriteLine("Press enter to stop");
-			Console.ReadLine();
-			duplex.Close();
-		}
-	}
+    namespace Example4
+    {
+        class Program
+        {
+            static async Task Main(string[] args)
+            {
+                using (var udpClient = new UdpClient("127.0.0.1", 57100))
+                {
+                    var response = await udpClient.ReceiveMessageAsync();
 
-UDPDuplex works like UDPListener for recieving messages and work like UDPSender for sending messages. in this case the remote machine is remotehost.com listening on port 4444 and this script listens and sends messages from port 5555.
+                    if (response.Address.Value == "/example4")
+                    {
+                        Console.WriteLine("/example4");
+                        var stringArgument = (string)response.Arguments.ElementAt(0);
+                        var intArgument = (int)response.Arguments.ElementAt(1);
+                        var falseArgument = (OscFalse)response.Arguments.ElementAt(2);
+                        Console.WriteLine($"First string argument:  {stringArgument}");
+                        Console.WriteLine($"Second int argument:    {intArgument}");
+                        Console.WriteLine($"Third OscFalse argument:{falseArgument}");
+                    }
+                }
+            }
+        }
+    }
+
+In example 4, when a message with address /example4 is received, the application knows that the first argument is a string, the second is an
+integer, and the third is an OSC False. In the sample above, the value of each message argument is  printed to the console.
