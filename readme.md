@@ -59,7 +59,7 @@ Supported Types
 Unsupported Types
 ---------------
 
-Note that nested arrays (arrays within arrays) are not supported, the OSC specification is unclear about whether that it is even allowed.
+Note that arrays are not currently supported.
 
 * [	- Indicates the beginning of an array. The tags following are for data in the Array until a close brace tag is reached. (System.Object[] / List\<object\>)
 * ]	- Indicates the end of an array.
