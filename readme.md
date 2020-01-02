@@ -22,11 +22,12 @@ Completed improvements to code base
 3. Break out type switch into separate TypeConverter classes
 4. Remove UDP code, use extension method to System.Net.Sockets.UdpClient
 5. Update readme.md with new interface and examples
+6. Release to nuget
 
 Planned future improvements
 
-6. Map OscFalse, OscTrue, OscInfinitum, OscNil etc. to false/true values
-7. Make nuget package (with AppVeyor?) and release to nuget
+7. Map OscFalse, OscTrue, OscInfinitum, OscNil etc. to false/true values
+8. Automate nuget release with AppVeyor
 
 History
 --------
