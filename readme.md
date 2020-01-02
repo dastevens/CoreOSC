@@ -55,6 +55,9 @@ Supported Types
 * N	- Nil. No bytes are allocated in the argument data. (null)
 * I	- Infinitum. No bytes are allocated in the argument data. (Double.PositiveInfinity)
 
+Unsupported Types
+---------------
+
 Note that nested arrays (arrays within arrays) are not supported, the OSC specification is unclear about whether that it is even allowed.
 
 * [	- Indicates the beginning of an array. The tags following are for data in the Array until a close brace tag is reached. (System.Object[] / List\<object\>)
@@ -70,7 +73,21 @@ See License.txt
 Using The Library
 -----------------
 
-To use the library add a reference to CoreOSC.dll in your .NET project. CoreOSC should now be available to use in your code under that namespace "CoreOSC". 
+The library is released on nuget.org (https://www.nuget.org/packages/CoreOSC/).
+
+Using power shell, you can install it with this command:
+
+```
+Install-Package CoreOSC
+```
+
+For a .NET core project you can install it like this:
+
+```
+dotnet add package CoreOSC
+```
+
+CoreOSC should now be available to use in your code under that namespace "CoreOSC".
 
 Example 1: Sending a message without arguments
 ----------------------------------------------
