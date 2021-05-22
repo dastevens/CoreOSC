@@ -13,25 +13,22 @@ namespace SuperColliderFun
     {
         static async Task Main(string[] args)
         {
+            var port = args.Length > 0 ? Convert.ToInt32(args[0]) : 57100;
+
             var cancellationTokenSource = new CancellationTokenSource();
 
-            var quitTask = Task.Run(() =>
-            {
-                Console.WriteLine("Hit ENTER to quit");
-                Console.ReadLine();
-                cancellationTokenSource.Cancel();
-            });
-
-            using (var udpClient = new UdpClient("127.0.0.1", 57100))
+            using (var udpClient = new UdpClient("127.0.0.1", port))
             {
                 var client = new Client(udpClient);
 
+                Console.WriteLine("Querying version...");
                 var versionReply = await client.Version();
 
                 Console.WriteLine($"ProgramName = {versionReply.ProgramName}");
                 Console.WriteLine($"Version = {versionReply.MajorVersionNumber}.{versionReply.MinorVersionNumber}{versionReply.PatchVersionName}");
                 Console.WriteLine($"Commit = {versionReply.GitBranchName} {versionReply.CommitHash}");
 
+                Console.WriteLine("Querying status...");
                 var statusReply = await client.Status();
 
                 Console.WriteLine($"Unused = {statusReply.Unused}");
@@ -49,8 +46,6 @@ namespace SuperColliderFun
                 var done = await client.Quit();
 
                 Console.WriteLine($"Done");
-
-                quitTask.Wait();
             }
         }
     }

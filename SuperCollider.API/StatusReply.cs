@@ -28,15 +28,15 @@ namespace SuperCollider.API
                 {
                     return new StatusReply
                     {
-                        Unused = (int)arguments[0],
-                        NumberOfUnitGenerators = (int)arguments[1],
-                        NumberOfSynths = (int)arguments[2],
-                        NumberOfGroups = (int)arguments[3],
-                        NumberOfLoadedSynthDefinitions = (int)arguments[4],
-                        AveragePercentCPUUsage = (float)arguments[5],
-                        PeakPercentCPUUsage = (float)arguments[6],
-                        NominalSampleRate = (double)arguments[7],
-                        ActualSampleRate = (double)arguments[8]
+                        Unused = Convert.ToInt32(arguments[0]),
+                        NumberOfUnitGenerators = Convert.ToInt32(arguments[1]),
+                        NumberOfSynths = Convert.ToInt32(arguments[2]),
+                        NumberOfGroups = Convert.ToInt32(arguments[3]),
+                        NumberOfLoadedSynthDefinitions = Convert.ToInt32(arguments[4]),
+                        AveragePercentCPUUsage = Convert.ToSingle(arguments[5]),
+                        PeakPercentCPUUsage = Convert.ToSingle(arguments[6]),
+                        NominalSampleRate = Convert.ToDouble(arguments[7]),
+                        ActualSampleRate = Convert.ToDouble(arguments[8]),
                     };
                 }
                 else
